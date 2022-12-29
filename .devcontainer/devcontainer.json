@@ -1,9 +1,0 @@
-{
-  "name": "My Devcontainer",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "runArgs": [
-    "-p", "8080:80"
-  ]
-}
