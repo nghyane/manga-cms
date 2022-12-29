@@ -1,0 +1,11 @@
+{
+    "name": "Anime",
+    "alias": "anime",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Anime\\Providers\\AnimeServiceProvider"
+    ],
+    "files": []
+}

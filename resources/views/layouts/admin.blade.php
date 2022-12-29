@@ -71,6 +71,9 @@
             </a>
         </li>
 
+        <!-- Nav Item - Manga -->
+        
+
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
 

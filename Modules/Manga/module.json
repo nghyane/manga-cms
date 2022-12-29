@@ -1,0 +1,11 @@
+{
+    "name": "Manga",
+    "alias": "manga",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Manga\\Providers\\MangaServiceProvider"
+    ],
+    "files": []
+}
