@@ -55,7 +55,9 @@ class DownloadM3u8 implements ShouldQueue
         $m3u8_content = $response->getBody()->getContents();
 
         // download all ts file
-        mkdir($m3u8_path . '/ts', 0777, true);
+        if(!is_dir($m3u8_path . '/ts')) {
+            mkdir($m3u8_path . '/ts', 0777, true);
+        }
 
         $promises = [];
 
@@ -68,27 +70,26 @@ class DownloadM3u8 implements ShouldQueue
         }
 
         // get promise sorted by key
-        $results = \GuzzleHttp\Promise\Utils::settle($promises)->wait();
-        $downloaded_files = [];
-        foreach ($results as $key => $result) {
-            if ($result['state'] === 'fulfilled') {
-                $response = $result['value'];
-                $ts_file = $response->getBody()->getContents();
+        $uploaded_files = [];
 
-                $ts_file_name = $m3u8_path . '/ts/' . $key . '.ts';
-                file_put_contents($ts_file_name, $ts_file);
-                $downloaded_files[] = $ts_file_name;
-            }
-        }
+        $eachPromise = new \GuzzleHttp\Promise\EachPromise($promises, [
+            'concurrency' => 10,
+            'fulfilled' => function ($response, $index) use ($m3u8_path, &$uploaded_files) {
+                $ts_file = $m3u8_path . '/ts/' . $index . '.ts';
+                file_put_contents($ts_file, $response->getBody()->getContents());
+                $uploaded_files[$index] = $ts_file;
+            },
+            'rejected' => function ($reason, $index) {
+                throw new \Exception($reason);
+            },
+        ]);
 
-        // compare ts file with downloaded file
-        if (count($ts_files) != count($downloaded_files)) {
-            die('Download failed');
-        }
+        $eachPromise->promise()->wait();
 
+        ksort($uploaded_files);
+        // merge all ts file m3u8
 
-        // replace downloaded_files to m3u8 file
-        $m3u8_content = str_replace($ts_files, $downloaded_files, $m3u8_content);
+        $m3u8_content = str_replace($ts_files, $uploaded_files, $m3u8_content);
 
         file_put_contents($m3u8_file, $m3u8_content);
     }
