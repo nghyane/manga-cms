@@ -1,7 +1,9 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {
-    "ghcr.io/shyim/devcontainers-features/php:0": {},
-    "ghcr.io/warrenbuckley/codespace-features/sqlite:1": {}
-  }
+  "name": "My Devcontainer",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "runArgs": [
+    "-p", "8080:80"
+  ]
 }
