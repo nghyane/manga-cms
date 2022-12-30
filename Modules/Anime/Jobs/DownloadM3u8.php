@@ -33,63 +33,74 @@ class DownloadM3u8 implements ShouldQueue
      */
     public function handle()
     {
+        ini_set('memory_limit', '6G');//1 GIGABYTE
+
         echo 'Downloading episode ' . $this->episode_id . '...' . PHP_EOL;
         // storage m3u8 to public folder
         $m3u8_path = storage_path('app/public/episodes/' . $this->episode_id);
         if(!is_dir($m3u8_path)) {
-            mkdir($m3u8_path, 0777, true);
+            mkdir($m3u8_path . "/ts", 0777, true);
+
         }
 
         // check resolution exist
         $m3u8_file = $m3u8_path . '/master.m3u8';
 
-        $client = new \GuzzleHttp\Client(
-            [
-                'on_stats' => function (\GuzzleHttp\TransferStats $stats) {
-                    echo $stats->getEffectiveUri() . PHP_EOL;
-                },
-            ]
+        // get all EXTINF url from m3u8
+        preg_match_all('/EXTINF:(.*),\s*(.*)/', file_get_contents($this->m3u8_url), $matches);
+
+        $URLS = $matches[2];
+
+        // add file 'url' to array $URLS use array_map
+        $URLS = array_map(function ($url) {
+            return "file $url" . PHP_EOL;
+        }, $URLS);
+
+        $iem_concat = tempnam(sys_get_temp_dir(), 'iem_concat') . '.txt';
+        file_put_contents($iem_concat, $URLS);
+        chmod($iem_concat, 0777);
+
+        $cmd = sprintf('ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -f concat -safe 0 -threads 30 -i %s -c copy -hls_list_size 0 -hls_segment_filename %s %s', $iem_concat, $m3u8_path . "/ts/%03d.ts", $m3u8_file);
+
+        echo 'Running command: ' . $cmd . PHP_EOL;
+
+        \Symfony\Component\Process\Process::fromShellCommandline($cmd)->setTimeout(0)->run(
+            function ($type, $buffer) {
+                echo $buffer;
+            }
         );
-        $response = $client->request('GET', $this->m3u8_url);
 
-        $m3u8_content = $response->getBody()->getContents();
-
-        // download all ts file
-        mkdir($m3u8_path . '/ts', 0777, true);
-
-        $promises = [];
-
-        // get all url EXTINF from m3u8 file
-        preg_match_all('/EXTINF:(.*),\s*(.*)/', $m3u8_content, $matches);
-        $ts_files = $matches[2];
-
-        foreach ($ts_files as $ts_file) {
-            $promises[] = $client->getAsync($ts_file);
+        // check file exist
+        if(!file_exists($m3u8_file)) {
+            echo 'Download failed' . PHP_EOL;
+            return;
         }
 
-        // get promise sorted by key
-        $results = \GuzzleHttp\Promise\Utils::settle($promises)->wait();
-        $downloaded_files = [];
-        foreach ($results as $key => $result) {
-            if ($result['state'] === 'fulfilled') {
-                $response = $result['value'];
-                $ts_file = $response->getBody()->getContents();
+        $m3u8_file_content = file_get_contents($m3u8_file);
+        $m3u8_file_content = explode(PHP_EOL, $m3u8_file_content);
 
-                $ts_file_name = $m3u8_path . '/ts/' . $key . '.ts';
-                file_put_contents($ts_file_name, $ts_file);
-                $downloaded_files[] = $ts_file_name;
+        $upload_list = [];
+
+        foreach ($m3u8_file_content as $key => $value) {
+            if (strpos($value, '.ts') !== false) {
+                $upload_list[] = $m3u8_path . '/' . $value;
             }
         }
 
-        // compare ts file with downloaded file
-        if (count($ts_files) != count($downloaded_files)) {
-            die('Download failed');
+        $blogger = new \Modules\Storage\Services\Blogger();
+
+        $news = $blogger->multiUploadFile($upload_list);
+        $news_index = 0;
+
+        foreach ($m3u8_file_content as $key => $value) {
+            if (strpos($value, '.ts') !== false) {
+                $m3u8_file_content[$key] = $news[$news_index];
+            }
         }
 
-
-        // replace downloaded_files to m3u8 file
-        $m3u8_content = str_replace($ts_files, $downloaded_files, $m3u8_content);
-
-        file_put_contents($m3u8_file, $m3u8_content);
+        // delete file
+        foreach ($upload_list as $key => $value) {
+            unlink($value);
+        }
     }
 }
