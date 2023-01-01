@@ -7,8 +7,12 @@ use Modules\Anime\Entities\Anime;
 class Hentaihaven extends AnimeCrawler
 {
 
+    protected $base_url;
+    protected $client;
+
     public function __construct()
     {
+
         $this->base_url = 'https://wibulord.com/proxy.html?url=https://hentaihaven.xxx';
 
         // gluzze client no ssl verify

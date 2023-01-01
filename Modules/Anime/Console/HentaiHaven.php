@@ -42,7 +42,8 @@ class HentaiHaven extends Command
     {
         $this->info('Crawling begin...');
 
-
+        $crawler = new \Modules\Anime\Services\Hentaihaven();
+        $crawler->crawl();
     }
 
     /**
