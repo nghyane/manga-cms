@@ -3,14 +3,16 @@
 namespace Modules\Anime\Services;
 
 use Modules\Anime\Entities\Anime;
-use Modules\Anime\Entities\Tag;
-use Modules\Anime\Entities\Genres;
 
 class Hentaihaven extends AnimeCrawler
 {
 
+    protected $base_url;
+    protected $client;
+
     public function __construct()
     {
+
         $this->base_url = 'https://wibulord.com/proxy.html?url=https://hentaihaven.xxx';
 
         // gluzze client no ssl verify

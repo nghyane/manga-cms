@@ -15,7 +15,7 @@ export default defineConfig({
             publicDirectory: '../../public',
             buildDirectory: 'build-anime',
             input: [
-                __dirname + '/Resources/assets/sass/app.scss',
+                __dirname + '/Resources/assets/css/app.css',
                 __dirname + '/Resources/assets/js/app.js'
             ],
             refresh: true,

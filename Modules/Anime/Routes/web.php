@@ -12,6 +12,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('anime')->group(function() {
-    Route::get('/', 'AnimeController@index');
-});
+Route::get('/', 'HomeController@index');
+Route::get('/home', 'HomeController@home')->name('home');
+Route::get('/ongoing', 'HomeController@ongoing')->name('ongoing');
+Route::get('/completed', 'HomeController@completed')->name('completed');
+Route::get('/updated', 'HomeController@updated')->name('updated');
+
+// id = anime id encode to string
+Route::get('/{id}-f{slug}', 'AnimeController@anime')->name('anime')->where('id', '[a-zA-Z0-9]+')->where('slug', '[a-zA-Z0-9-]+');
+
+

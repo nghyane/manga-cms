@@ -12,68 +12,28 @@ class AnimeController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function anime($id, $slug) // <--- this is the function that is called when you visit /{id}-f{slug}
     {
-        return view('anime::index');
+        $id = decode_id($id);
+        $anime = \Modules\Anime\Entities\Anime::find($id);
+
+        if ($anime->slug != $slug) {
+
+            return redirect()->route('anime', ['id' => encode_id($anime->id), 'slug' => $anime->slug]);
+        }
+
+        // get anime_meta
+        $anime_meta = $anime->meta()->first();
+
+        // $anime->views = $anime->views + 1;
+        // $anime->save();
+
+        print_r($anime->toArray());
+
+        $episodes = $anime->episodes()->orderBy('name', 'desc')->paginate(20);
+
+        return view('anime::pages.watch', compact('anime', 'episodes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('anime::create');
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('anime::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('anime::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

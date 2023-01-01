@@ -13,7 +13,8 @@ class HentaiHaven extends Command
      *
      * @var string
      */
-    protected $name = 'anime:hentaihaven';
+
+    protected $name = 'anime:start';
 
     /**
      * The console command description.
@@ -39,12 +40,10 @@ class HentaiHaven extends Command
      */
     public function handle()
     {
-        $this->info('Crawling hentaihaven...');
+        $this->info('Crawling begin...');
 
-        $Hentaihaven = new \Modules\Anime\Services\Hentaihaven();
-        $Hentaihaven->crawl();
-
-        $this->info('Done!');
+        $crawler = new \Modules\Anime\Services\Hentaihaven();
+        $crawler->crawl();
     }
 
     /**
