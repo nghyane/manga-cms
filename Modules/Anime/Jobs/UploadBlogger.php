@@ -40,6 +40,5 @@ class UploadBlogger implements ShouldQueue
        $blogger = new \Modules\Storage\Services\Blogger();
 
 
-
     }
 }

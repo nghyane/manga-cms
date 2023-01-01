@@ -3,8 +3,6 @@
 namespace Modules\Anime\Services;
 
 use Modules\Anime\Entities\Anime;
-use Modules\Anime\Entities\Tag;
-use Modules\Anime\Entities\Genres;
 
 class Hentaihaven extends AnimeCrawler
 {

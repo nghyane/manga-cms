@@ -1,5 +1,27 @@
 <?php
 
+
+$url = "https://plus.google.com/_/upload/photos/resumable?upload_id=ADPycdtIFGY0b-jwa6k1lJi77-zBlQePDUNwHBNeWxiSOSN0oIkgl78p1_YObmrFwXZuLAoagq16HGsg0K_VNLmDUFIV7g&file_id=000";
+
+$curl = curl_init($url);
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_PUT, true);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+$headers = array(
+    "Content-Type: application/json",
+    "Content-Length: 0",
+);
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+//for debug only!
+curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+$resp = curl_exec($curl);
+curl_close($curl);
+var_dump($resp);
+
+die;
 $url = "https://clients6.google.com/batch/drive/v2internal?%24ct=multipart%2Fmixed%3B%20boundary%3D%22%3D%3D%3D%3D%3D4t9r8ktj5utg%3D%3D%3D%3D%3D%22&key=AIzaSyAw-cTyp9Xotzvu3vNDWhDU3E9NConkKxQ";
 
 $fields = "thumbnailLink,imageMediaMetadata";

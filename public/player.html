@@ -1,0 +1,34 @@
+<html>
+
+<body>
+    <div id="playerContainer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/indigo-player@1/lib/indigo-player.js"></script>
+    <script>
+        const config = {
+            sources: [
+                {
+                    type: 'hls',
+                    src: '/storage/episodes/4/playlist.m3u8',
+                }
+            ],
+            controls: true,
+            autoplay: true,
+            cache: true,
+            preload: 'auto',
+            embed: true,
+        };
+
+        const element = document.getElementById('playerContainer');
+        const player = IndigoPlayer.init(element, config);
+
+        player.on('ready', () => {
+            console.log('Player is ready');
+        });
+
+        player.on('error', (error) => {
+            console.log('Player error', error);
+        });
+    </script>
+</body>
+
+</html>

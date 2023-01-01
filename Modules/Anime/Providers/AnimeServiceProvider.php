@@ -3,7 +3,7 @@
 namespace Modules\Anime\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
+use Jenssegers\Optimus\Optimus;
 
 class AnimeServiceProvider extends ServiceProvider
 {
@@ -28,6 +28,9 @@ class AnimeServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+
+        // load helpers
+        require_once __DIR__ . '/../helpers.php';
     }
 
     /**

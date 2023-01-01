@@ -11,7 +11,7 @@ class TestStorage extends Command
      *
      * @var string
      */
-    protected $signature = 'test:blogger';
+    protected $signature = 'test:storage';
 
     /**
      * The console command description.
@@ -27,34 +27,28 @@ class TestStorage extends Command
      */
     public function handle()
     {
+        $episode_path = storage_path('app/public/episodes/4');
 
+        $files = glob($episode_path . '/ts/*.ts');
+        $master_file = $episode_path . '/master.m3u8';
 
-        $files = glob(storage_path('app/public/episodes/1/ts/*.ts'));
+        echo "Files: " . count($files) . PHP_EOL;
 
-        $blogger = new \Modules\Storage\Services\Blogger();
-      echo  $blogger->getDownloadUrl("https://get.google.com/albumarchive/111313901715989217946/album/AF1QipN5VANEH6LQYbKs9s5xevXeCatkxOOx51bG1DgF/AF1QipP8IR7F-7MNzd-ymRyrCwWTBVUlLnZveRHSF7hv?authKey=Gv1sRgCMSz0o6vvdzaPw");
+        $storage = new \Modules\Storage\Services\NftStorage();
+        $uploaded = $storage->multiUploadFile($files);
 
+        $index_uploaded = 0;
+        $m3u8_content = explode(PHP_EOL, file_get_contents($master_file));
 
-        exit;
-        $uploaded = $blogger->multiUploadFile($files);
-
-
-        // get m3u8 file from list url
-        $m3u8_content  = "#EXTM3U" . PHP_EOL;
-        $m3u8_content .= "#EXT-X-VERSION:3" . PHP_EOL;
-        $m3u8_content .= "#EXT-X-TARGETDURATION:10" . PHP_EOL;
-
-        $i = 0;
-        foreach($uploaded as $file) {
-            $m3u8_content .= "#EXT-X-MEDIA-SEQUENCE:" . $i . PHP_EOL;
-            $m3u8_content .= "#EXTINF:10," . PHP_EOL;
-            $m3u8_content .= $file . PHP_EOL;
-            $i++;
+        foreach ($m3u8_content as $key => $line) {
+            if (strpos($line, '.ts') !== false) {
+                $m3u8_content[$key] = $uploaded[$index_uploaded++];
+            }
         }
 
-        $m3u8_content .= "#EXT-X-ENDLIST" . PHP_EOL;
+        $m3u8_content = implode(PHP_EOL, $m3u8_content);
 
-        file_put_contents(storage_path('app/public/episodes/1/playlist.m3u8'), $m3u8_content);
+        file_put_contents($episode_path . '/playlist.m3u8', $m3u8_content);
 
         return Command::SUCCESS;
     }

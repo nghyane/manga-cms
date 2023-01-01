@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.0.2",
         "alex433/laravel-eloquent-cache": "dev-master",
+        "artesaos/seotools": "^1.0",
         "devmarketer/easynav": "^1.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",

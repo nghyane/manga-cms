@@ -18,6 +18,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug');
+            // status: 0 = ongoing, 1 = completed
+            $table->tinyInteger('status')->default(0);
+            // type: 0 = tv, 1 = movie, 2 = ova, 3 = special
+            $table->tinyInteger('type')->default(0);
+
             $table->text('description')->nullable()->default(null);
             $table->timestamps();
         }); // to create anime model run: php artisan make:model Anime -m
@@ -26,7 +31,7 @@ return new class extends Migration
         Schema::create('episodes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('anime_id')->constrained('animes');
-            $table->text('description')->nullable()->default(null);
+            $table->text('description')->nullable()->default(null); // episode description (optional)
             $table->string('name');
             $table->string('slug');
             $table->timestamps();
@@ -36,10 +41,11 @@ return new class extends Migration
         Schema::create('video', function (Blueprint $table) {
             $table->id();
             $table->foreignId('episode_id')->constrained('episodes');
-            $table->string('type');
+            $table->string('type'); // video type: mp4, embed, etc
             $table->string('url');
-            $table->string('subtitle');
+            $table->string('subtitle'); // subtitle language - json format [{language: 'English', url: 'https://example.com/subtitle.srt'}}]
             $table->string('language');
+
             $table->timestamps();
         });
 

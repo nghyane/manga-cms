@@ -19,6 +19,10 @@ class Blogger
 
     protected $resumable_index = 0;
 
+    protected $files;
+
+    protected $putInfos;
+
 
 
     public $bypass = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAMSURBVBhXY/j//z8ABf4C/qc1gYQAAAAASUVORK5CYIIAlWQMYkxPYg==";
@@ -40,10 +44,16 @@ class Blogger
             'headers' => [
                 'cookie' => $this->cookie,
                 'authorization' => "SAPISIDHASH {$dateUtc}_{$sidHash}",
-
+                'origin' => $origin,
+                'content-type' => 'application/json+protobuf',
             ],
             'verify' => false,
+            'on_stats' => function (\GuzzleHttp\TransferStats $stats) {
+                // show total in one line cli progress bar
+                echo "\rRunning time:" . $stats->getTransferTime() . "s";
+            }
         ]);
+
 
         $this->bypass = base64_decode($this->bypass);
     }
@@ -55,74 +65,118 @@ class Blogger
 
     public function multiUploadFile($files)
     {
-
-        // make chunk of files
-        $putInfos = $this->getPutInfoUrls($files);
-        $putInfos = array_chunk($putInfos, $this->chunk_size);
+        // chuck files
         $files = array_chunk($files, $this->chunk_size);
+        $getReturnUrls = [];
 
+        foreach ($files as $file) {
+            $this->files = $file;
+            $this->putInfos = [];
 
-        $chunk_uploaded = [];
+            // upload id
+            $this->putInfos = $this->getPutInfoUrls();
 
-        foreach ($files as $index => $files_chuck) {
-            // merge putInfos to uploaded
-            $chunk_uploaded[] = $this->putImages($files_chuck, $putInfos[$index]);
+            // upload and try put again if fail
+            $this->uploadFiles();
+
+            $getReturnUrls  = array_merge($getReturnUrls, $this->getReturnUrls());
         }
 
-        return array_merge(...$chunk_uploaded);
+
+        echo PHP_EOL . count($getReturnUrls) . " files uploaded" . PHP_EOL;
+
+        return  $getReturnUrls;
     }
 
+    private function getReturnUrls(){
+        $returnUrls = [];
+        ksort($this->putInfos);
 
-    public function putImages($files, $putInfos)
-    {
-        $promises = [];
-        $photoUrls = [];
-
-        foreach ($files as $index => $file) {
-            $file_content = $this->bypass . file_get_contents($file);
-
-            $promises[] = $this->client->requestAsync('PUT', $putInfos[$index]['url'], [
-                'headers' => [
-                    'cookie' => $this->cookie,
-                    'Content-Type' => 'application/octet-stream',
-                    'Content-Length' => filesize($file) + strlen($this->bypass),
-                ],
-                'body' => $file_content
-            ]);
+        foreach ($this->putInfos as $putInfo) {
+            $returnUrls[] = $putInfo['upload_id'];
         }
 
-        $eachPromise = new \GuzzleHttp\Promise\EachPromise($promises, [
-            'fulfilled' => function ($response, $index) use (&$photoUrls) {
+        return $returnUrls;
+    }
+
+    private function uploadFiles()
+    {
+        $promises = [];
+
+        foreach ($this->putInfos as $putInfo) {
+            $promises[] = $this->client->requestAsync('PUT', $putInfo['url'], [
+                'headers' => [
+                    'content-length' => $putInfo['file_size'],
+                    'cookie' => $this->cookie,
+                    'Content-Type' => 'application/octet-stream',
+                ], 'body' => $this->bypass . file_get_contents($putInfo['file'])
+            ])->then(function ($response) use ($putInfo) {
                 $content = $response->getBody()->getContents();
-                $content = json_decode($content, true);
+                $this->putInfos[$putInfo['index']]['status'] = 'fail';
 
-                $info = $content['sessionStatus']['additionalInfo']['uploader_service.GoogleRupioAdditionalInfo']['completionInfo']['customerSpecificInfo'];
+                if (strpos($content, 'FINALIZED') !== false) {
+                    $this->putInfos[$putInfo['index']]['status'] = 'success';
 
-                $photoPageUrl = $info['photoPageUrl'];
-                preg_match('/authkey=(.*)#/', $photoPageUrl, $matches);
-                $authKey = $matches[1];
+                    preg_match('/"upload_id":"(.*?)"/', $content, $matches);
+                    $this->putInfos[$putInfo['index']]['upload_id'] = $matches[1];
+                }
+            }, function ($reason) use ($putInfo) {
+                if ($reason->getCode() >= 500) {
+                    $this->putInfos[$putInfo['index']]['status'] = 'queue';
+                }
+            });
+        }
 
+        $promises = \GuzzleHttp\Promise\Utils::settle($promises)->wait();
 
-                $albumarchive_url = sprintf("https://get.google.com/albumarchive/%s/album/%s/%s?authKey=%s",
-                    $info['username'],
-                    $info['albumMediaKey'],
-                    $info['photoMediaKey'],
-                    $authKey
-                );
+        // try again if fail
+        do {
+            $queues = [];
+            foreach ($this->putInfos as $putInfo) {
+                if ($putInfo['status'] == 'queue') {
+                    $queues[] = $putInfo;
+                }
+            }
 
-                $photoUrls[$index] = $albumarchive_url;
+            if (count($queues) == 0) {
+                break;
+            }
 
-                echo $index. PHP_EOL;
-            },
-            'rejected' => function ($reason, $index) {
-                die($reason);
-            },
-        ]);
+            $promises = [];
 
-        $eachPromise->promise()->wait();
-        ksort($photoUrls);
+            $client = new \GuzzleHttp\Client([
+                'verify' => false,
+                'headers' => [
+                    'Content-Range' => 'bytes */*',
+                ],
+            ]);
 
-        return $photoUrls;
+            foreach ($queues as $putInfo) {
+                $promises[] = $client->putAsync($putInfo['url'])->then(function ($response) use ($putInfo) {
+                    $this->putInfos[$putInfo['index']]['status'] = 'fail';
+
+                    $content = $response->getBody()->getContents();
+                    if (strpos($content, 'FINALIZED') !== false) {
+                        $this->putInfos[$putInfo['index']]['status'] = 'success';
+
+                        // uploadID
+                        preg_match('/"upload_id":"(.*?)"/', $content, $matches);
+                        $this->putInfos[$putInfo['index']]['upload_id'] = $matches[1];
+
+                        $this->putInfos[$putInfo['index']]['status'] = 'success';
+                    }
+                }, function ($reason) use ($putInfo) {
+                    // if 503 error, try again
+                    if ($reason->getCode() >= 500) {
+                        $this->putInfos[$putInfo['index']]['status'] = 'queue';
+                    } else {
+                        $this->putInfos[$putInfo['index']]['status'] = 'fail';
+                    }
+                });
+            }
+
+            $promises = \GuzzleHttp\Promise\Utils::settle($promises)->wait();
+        } while (count($queues) > 0);
     }
 
 
@@ -135,11 +189,12 @@ class Blogger
         return $this->sid;
     }
 
-    function getResumable(){
+    function getResumable()
+    {
         $randomList = [
             "https://plus.google.com/_/upload/photos/resumable",
-            "https://docs.google.com/upload/photos/resumable",
             "https://photos.google.com/_/upload/photos/resumable",
+            "https://docs.google.com/upload/photos/resumable",
             "https://mail.google.com/upload/photos/resumable",
             "https://drive.google.com/upload/photos/resumable",
         ];
@@ -147,48 +202,37 @@ class Blogger
         return $randomList[$this->resumable_index++ % count($randomList)];
     }
 
-    public function getPutInfoUrls($files)
+    public function getPutInfoUrls()
     {
         $promises = [];
-        $data = [];
+        $file_index = 0;
 
-
-        foreach ($files as $file) {
+        foreach ($this->files as $file) {
             $file_size = filesize($file) + strlen($this->bypass);
+
             $getResumable = $this->getResumable();
 
             $promises[] = $this->client->requestAsync('POST', $getResumable, [
                 'body' => $this->getBody($file_size),
-            ]);
+            ])->then(function ($response) use ($file_index, $file, $file_size) {
+                $this->putInfos[$file_index] = [
+                    'status' => 'start',
+                    'index' => $file_index,
+                    'file' => $file,
+                    'file_size' => $file_size,
+                    'url' => $response->getHeader('Location')[0]
+                ];
+
+            }, function ($reason) {
+                dd($reason->getMessage());
+            });
+
+            $file_index++;
         }
 
-        $eachPromise = new \GuzzleHttp\Promise\EachPromise($promises, [
-            'fulfilled' => function ($response, $index) use (&$data) {
+        $promises = \GuzzleHttp\Promise\Utils::settle($promises)->wait();
 
-                $content = $response->getBody()->getContents();
-                $content = json_decode($content, true);
-
-                $status = $content['sessionStatus']['state'];
-                if ($status != 'OPEN') {
-                    die('Error');
-                    return;
-                }
-
-
-                $data[$index] = [
-                    'url' => $content['sessionStatus']['externalFieldTransfers'][0]['putInfo']['url'],
-                    'upload_id' => $content['sessionStatus']['upload_id'],
-                ];
-            },
-            'rejected' => function ($reason, $index) {
-                // this is delivered each failed request
-            },
-        ]);
-
-        $eachPromise->promise()->wait();
-        ksort($data);
-
-        return  $data;
+        return $this->putInfos;
     }
 
     function getBody($file_size = 0)
@@ -199,7 +243,9 @@ class Blogger
     }
 
 
-    public function getDownloadUrl($albumarchive){
+
+    public function getDownloadUrl($albumarchive)
+    {
         $response = $this->client->request('GET', $albumarchive, [
             'headers' => [
                 'cookie' => $this->cookie,
