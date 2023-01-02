@@ -82,6 +82,23 @@ return new class extends Migration
             $table->timestamps();
         });
 
+
+        // studio table migration: id (int), name (string), slug (string), created_at (timestamp), updated_at (timestamp)
+        Schema::create('studios', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug');
+            $table->timestamps();
+        });
+
+        // anime_studios table migration: id (int), anime_id (int), studio_id (int), created_at (timestamp), updated_at (timestamp)
+        Schema::create('anime_studios', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('anime_id')->constrained('animes');
+            $table->foreignId('studio_id')->constrained('studios');
+            $table->timestamps();
+        });
+
         // schedule table migration: id (int), anime_id (int), day (string), time (string), created_at (timestamp), updated_at (timestamp)
         Schema::create('schedule', function (Blueprint $table) {
             $table->id();
@@ -91,14 +108,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // anime_metas table migration: id (int), anime_id (int), meta_key (string), meta_value (string), created_at (timestamp), updated_at (timestamp)
-        Schema::create('anime_metas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('anime_id')->constrained('animes');
-            $table->string('meta_key');
-            $table->string('meta_value');
-            $table->timestamps();
-        });
 
         // episodes quque table migration: id (int), episode_id (int), status (string), created_at (timestamp), updated_at (timestamp)
         Schema::create('episodes_queue', function (Blueprint $table) {
@@ -119,14 +128,19 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('schedule');
+
         Schema::dropIfExists('anime_genres');
         Schema::dropIfExists('genres');
+
         Schema::dropIfExists('anime_tags');
-        Schema::dropIfExists('anime_metas');
         Schema::dropIfExists('tags');
-        Schema::dropIfExists('video');
+
         Schema::dropIfExists('episodes_queue');
+        Schema::dropIfExists('video');
         Schema::dropIfExists('episodes');
+
+        Schema::dropIfExists('anime_studios');
+        Schema::dropIfExists('studios');
 
         Schema::dropIfExists('animes');
     }

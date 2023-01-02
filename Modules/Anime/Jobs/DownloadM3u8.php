@@ -60,7 +60,7 @@ class DownloadM3u8 implements ShouldQueue
         file_put_contents($iem_concat, $URLS);
         chmod($iem_concat, 0777);
 
-        $cmd = sprintf('ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -f concat -safe 0 -threads 50 -i %s -c copy -hls_list_size 0 -hls_segment_filename %s %s', $iem_concat, $m3u8_path . "/ts/%03d.ts", $m3u8_file);
+        $cmd = sprintf('ffmpeg -protocol_whitelist file,http,https,tcp,tls,crypto -f concat -safe 0 -threads 20 -i %s -c copy %s %s', $iem_concat, $m3u8_path . "/ts/%03d.ts", $m3u8_file);
 
         echo 'Running command: ' . $cmd . PHP_EOL;
 

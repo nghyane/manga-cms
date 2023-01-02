@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 use Alex433\LaravelEloquentCache\Cachable;
+use Plank\Metable\Metable;
 
 class Anime extends Model
 {
-    use HasFactory, Cachable;
+    use HasFactory, Cachable, Metable;
+
 
     const STATUS_ONGOING = 1;
     const STATUS_COMPLETED = 2;
@@ -38,11 +40,6 @@ class Anime extends Model
     public function genres()
     {
         return $this->belongsToMany(Genres::class, 'anime_genres', 'anime_id', 'genre_id');
-    }
-
-    public function meta()
-    {
-        return $this->hasOne(AnimeMeta::class);
     }
 
 }
