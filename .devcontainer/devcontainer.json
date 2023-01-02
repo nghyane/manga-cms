@@ -25,7 +25,7 @@
     "forwardPorts": [80],
 
     // run install script after container is created
-	"postCreateCommand": "chmod +x /workspace/install.sh && /workspace/install.sh",
+	"postCreateCommand": "",
 	"portsAttributes": {
 		"80": {
 			"label": "HTTP"
