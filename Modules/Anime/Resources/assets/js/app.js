@@ -4,6 +4,27 @@ let watchConfig = {
     'autoSkip': false,
 }
 
+// get episodes
+const getEpisodes = function (anime_id, callback) {
+    $.ajax({
+        url: `/api/anime/${anime_id}/episodes`,
+        async: false,
+        success: callback || function (data) {
+            console.log(data);
+        }
+    });
+}
+
+// get episode
+const getEpisode = function (anime_id, episode_id, callback) {
+    $.ajax({
+        url: `/api/anime/${anime_id}/episode/${episode_id}`,
+        async: false,
+        success: callback || function (data) {
+            console.log(data);
+        }
+    });
+}
 
 const Anime = {
     init: function () {
@@ -19,6 +40,29 @@ const Anime = {
             $('.tip').hover(function () {
                 $(this).tooltip('show');
             });
+
+            $(".gotop").click(function () {
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                return false;
+            });
+
+            $(".toggler").on('click', function () {
+                // toggle text content
+                $(this).parents('.shorting').toggleClass('expand');
+                // [more] to [less] or [less] to [more] content
+                $(this).html($(this).html() == '[more]' ? '[less]' : '[more]');
+            });
+
+            $(".switch").on('click', function () {
+                // data-switch="title_lang"
+                $(this).find('.active').removeClass('active');
+
+
+                let $switch = $(this).data('switch');
+                let $switchElm = $(`[data-switch="${$switch}"]`);
+
+                $switchElm.html($switchElm.data($lang));
+            });
         });
 
     },
@@ -29,7 +73,10 @@ const Anime = {
     },
 
     initWatchPage: function () {
+        const anime = $('.watchpage').data('anime');
+        const episode = $('.watchpage').data('episode')
 
+        console.log(anime);
 
         const updateWatchConfig = function (config, $element) {
             watchConfig[config] = !watchConfig[config];
@@ -71,7 +118,7 @@ const Anime = {
 
         $overlay.on('click', function () {
             // add z-index to
-            $playerWrapper. css('z-index', 23);
+            $playerWrapper.css('z-index', 23);
             $overlayElm.fadeToggle();
         });
 
@@ -105,6 +152,14 @@ const Anime = {
         $autoNext.on('click', function () {
             updateWatchConfig('autoNext', $autoNext);
         });
+
+        // get episodes CHECK IF ANIME NOT NULL
+        if (typeof (anime) !== 'undefined' && anime !== null) {
+            getEpisodes(anime.id, function (data) {
+
+            });
+        }
+
 
     },
 

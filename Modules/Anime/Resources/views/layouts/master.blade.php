@@ -11,7 +11,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/font-awesome-line-awesome/css/all.min.css"
         rel="stylesheet">
 
-    <link href="{{ asset('modules/anime/css/app.css') }}" rel="stylesheet">
+    {{ module_vite('modules/anime', 'Resources/assets/css/app.css') }}
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
@@ -27,12 +27,14 @@
 
     @include('anime::includes.footer')
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/4.2.8/js/tooltipster.bundle.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tooltipster/4.2.8/js/tooltipster.bundle.min.js"
+        type="text/javascript"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.min.js" type="text/javascript">
+    </script>
 
-    <script src="{{ asset('modules/anime/js/app.js') }}"></script>
+    {{ module_vite('modules/anime', 'Resources/assets/js/app.js') }}
 </body>
 
 </html>

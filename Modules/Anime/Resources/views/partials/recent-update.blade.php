@@ -21,9 +21,15 @@
     </div>
 
     @php
-        $animes = \Modules\Anime\Entities\Anime::orderBy('updated_at', 'desc')->limit(10)->get();
+        $limit = 12;
+        $offset = request()->cookie('home_page_num', 1) * $limit;
+
+        $anime_update = \Modules\Anime\Entities\Anime::orderBy('updated_at', 'desc')
+            ->with('meta')
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
     @endphp
 
-    <x-anime::itemlist :animes="$animes" />
-
+    <x-anime::itemlist :animes="$anime_update" />
 </section>

@@ -42,4 +42,43 @@ class Anime extends Model
         return $this->belongsToMany(Genres::class, 'anime_genres', 'anime_id', 'genre_id');
     }
 
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function studio()
+    {
+        return $this->belongsTo(Studio::class);
+    }
+
+    public function status()
+    {
+        switch ($this->status) {
+            case self::STATUS_ONGOING:
+                return __('ongoing');
+                break;
+            case self::STATUS_COMPLETED:
+                return __('oompleted');
+                break;
+            default:
+                return __('unknown');
+                break;
+        }
+    }
+
+    public function type()
+    {
+        return config('anime.type')[$this->type] ?? __('N/A');
+    }
+
+    public function cover()
+    {
+        return get_cover($this->slug);
+    }
+
+    public function url()
+    {
+        return get_anime_url($this);
+    }
 }

@@ -30,9 +30,7 @@ class AnimeFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (\Modules\Anime\Entities\Anime $anime) {
-            $anime->tags()->attach(\Modules\Anime\Entities\Tags::factory()->create());
             $anime->genres()->attach(\Modules\Anime\Entities\Genres::factory()->create());
         });
     }
 }
-

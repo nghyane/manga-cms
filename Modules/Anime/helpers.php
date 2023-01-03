@@ -37,3 +37,11 @@ if (!function_exists('get_anime_url')) {
         ]);
     }
 }
+
+if (!function_exists('get_cover')) {
+    // check config env
+    function get_cover($slug)
+    {
+        return asset("storage/covers/$slug.jpg");
+    }
+}

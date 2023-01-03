@@ -19,7 +19,8 @@
 
                         @foreach ($genres as $genre)
                             <li>
-                                <a href="/genre/{{ $genre->slug }}" title="{{ $genre->name }} Anime">{{ $genre->name }}</a>
+                                <a href="/genre/{{ $genre->slug }}"
+                                    title="{{ $genre->name }} Anime">{{ $genre->name }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -27,21 +28,16 @@
                 <li>
                     <a>Types</a>
                     <ul>
-                        <li>
-                            <a href="/tv">TV Series</a>
-                        </li>
-                        <li>
-                            <a href="/movie">Movies</a>
-                        </li>
-                        <li>
-                            <a href="/ova">OVAs</a>
-                        </li>
-                        <li>
-                            <a href="/ona">ONAs</a>
-                        </li>
-                        <li>
-                            <a href="/special">Specials</a>
-                        </li>
+                        @php
+                            // cache the types for 60 minutes
+                            $types = config('anime.type', []);
+                        @endphp
+                        @foreach ($types as $key => $type)
+                            <li>
+                                <a href="/type/{{ $key }}"
+                                    title="{{ $key }} Anime">{{ $type }}</a>
+                            </li>
+                        @endforeach
                     </ul>
                 </li>
                 <li>
@@ -78,4 +74,3 @@
         </div>
     </div>
 </header>
-

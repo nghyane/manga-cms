@@ -1,0 +1,16 @@
+{
+  "Resources/assets/images/header-bg.jpg": {
+    "file": "assets/header-bg.ba0b4a87.jpg",
+    "src": "Resources/assets/images/header-bg.jpg"
+  },
+  "Resources/assets/js/app.js": {
+    "file": "assets/app.c3216877.js",
+    "src": "Resources/assets/js/app.js",
+    "isEntry": true
+  },
+  "Resources/assets/css/app.css": {
+    "file": "assets/app.9562af55.css",
+    "src": "Resources/assets/css/app.css",
+    "isEntry": true
+  }
+}

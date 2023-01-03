@@ -56,13 +56,13 @@ class Hentaihaven extends AnimeCrawler
 
                 $anime->save();
 
-                if(empty($anime)){
+                if (empty($anime)) {
                     return;
                 }
 
                 $metas = [];
 
-                if($anime->wasRecentlyCreated){
+                if ($anime->wasRecentlyCreated) {
                     $tag_formats = [
                         '%s Hentai Uncensored',
                         'Uncensored %s Hentai',
@@ -84,53 +84,55 @@ class Hentaihaven extends AnimeCrawler
                     $HEADING = $node->filter('.summary-heading')->text();
 
 
-                    if(str_contains($HEADING, 'Release')){
+                    if (str_contains($HEADING, 'Release')) {
                         $metas['release'] = $node->filter('.summary-content')->text();
                         return;
                     }
 
-                    if(str_contains($HEADING, 'Alternative')){
+                    if (str_contains($HEADING, 'Alternative')) {
                         $metas['alternative'] = $node->filter('.summary-content')->text();
 
                         $tags = explode(',', $metas['alternative']);
-                        $tags = array_map(fn($tag) => trim($tag) . ' Uncensored', $tags);
+                        $tags = array_map(fn ($tag) => trim($tag) . ' Uncensored', $tags);
 
                         $tags = $this->tagsInsert($tags);
                         $anime->tags()->attach($tags);
                         return;
                     }
-
-                    if(str_contains($HEADING, 'Genre')){
-                        $genres = $node->filter('.summary-content a')->each(function ($node) {
-                            return trim($node->text());
-                        });
-
-                        $genres = $this->genresInsert($genres);
-                        $anime->genres()->attach($genres);
-                        return;
-                    }
                 });
+
+                $genres = $crawler->filter('.genres-content a')->each(function ($node) {
+                    return trim($node->text());
+                });
+
+                $genres = $this->genresInsert($genres);
+                $anime->genres()->attach($genres);
 
 
                 // insert meta anime
                 $anime->setManyMeta($metas);
 
-                // insert episode
+                // check cover exist: storage/app/public/manga/cover/{slug}.jpg
+                if (!$this->coverExist($slug)) {
+                    $cover = $crawler->filter('.summary_image img')->attr('src');
+                    $this->saveCover($cover, $slug);
+                }
 
-                $crawler->filter('.listing-chapters_wrap .wp-manga-chapter ')->each(function ($node) use ($anime, &$wating_get_video) {
+                // insert episode
+                $crawler->filter('.listing-chapters_wrap .wp-manga-chapter ')->each(function ($node) use ($anime) {
                     $a = $node->filter('a')->eq(0);
                     // regex get number or episode name
                     preg_match('/\d+/', $a->text(), $matches);
 
                     // if not found number
-                    if(empty($matches)){
+                    if (empty($matches)) {
                         return;
                     }
 
                     $episode_name = $matches[0];
 
                     //check episode exist
-                    if($anime->episodes()->where('name', $episode_name)->exists()){
+                    if ($anime->episodes()->where('name', $episode_name)->exists()) {
                         return;
                     }
 
@@ -166,7 +168,7 @@ class Hentaihaven extends AnimeCrawler
         $body = $response->getBody()->getContents();
 
         $iframe = preg_match('/<iframe.*?src="(.*?)".*?<\/iframe>/', $body, $matches);
-        if(empty($iframe)){
+        if (empty($iframe)) {
             return;
         }
 
@@ -238,7 +240,8 @@ class Hentaihaven extends AnimeCrawler
         return $video_url;
     }
 
-    function getUrls($page){
+    function getUrls($page)
+    {
         $url = $this->base_url . ($page <= 1 ? "/series/uncensored/" : "/series/uncensored/page/$page/");
 
         $response = $this->client->request('GET', $url);

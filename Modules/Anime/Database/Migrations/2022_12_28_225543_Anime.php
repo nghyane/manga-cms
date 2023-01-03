@@ -18,10 +18,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug');
-            // status: 0 = ongoing, 1 = completed
+            // status: 1 = ongoing, 2 = completed, 0 = unknown
             $table->tinyInteger('status')->default(0);
-            // type: 0 = tv, 1 = movie, 2 = ova, 3 = special
-            $table->tinyInteger('type')->default(0);
+            // type: tv, movie, ova, etc ...
+            $table->string('type')->default('tv');
+
+            $table->string('adult')->default('false');
 
             $table->text('description')->nullable()->default(null);
             $table->timestamps();
@@ -99,6 +101,23 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // countries table migration: id (int), name (string), slug (string), code (string), created_at (timestamp), updated_at (timestamp)
+        Schema::create('countries', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug');
+            $table->string('code');
+            $table->timestamps();
+        });
+
+        // anime_countries table migration: id (int), anime_id (int), country_id (int), created_at (timestamp), updated_at (timestamp)
+        Schema::create('anime_countries', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('anime_id')->constrained('animes');
+            $table->foreignId('country_id')->constrained('countries');
+            $table->timestamps();
+        });
+
         // schedule table migration: id (int), anime_id (int), day (string), time (string), created_at (timestamp), updated_at (timestamp)
         Schema::create('schedule', function (Blueprint $table) {
             $table->id();
@@ -142,6 +161,13 @@ return new class extends Migration
         Schema::dropIfExists('anime_studios');
         Schema::dropIfExists('studios');
 
+        Schema::dropIfExists('anime_countries');
+        Schema::dropIfExists('countries');
+
         Schema::dropIfExists('animes');
+
+
+        // clear cache
+        Artisan::call('cache:clear');
     }
 };

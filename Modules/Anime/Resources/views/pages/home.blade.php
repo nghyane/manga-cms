@@ -1,8 +1,9 @@
-@extends('anime::layouts.master')
+@if (!request()->ajax())
+    @extends('anime::layouts.master')
+@endif
 
 @section('content')
-
-@include('anime::partials.hsearch')
+    @include('anime::partials.hsearch')
 
     <section>
         <div class="heading sline">
@@ -24,5 +25,4 @@
     </section>
 
     @include('anime::partials.recent-update')
-
 @stop

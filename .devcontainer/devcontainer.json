@@ -16,7 +16,10 @@
 		"christian-kohler.path-intellisense",
 		"esbenp.prettier-vscode",
 		"CoenraadS.bracket-pair-colorizer",
-		"GitHub.copilot"
+		"GitHub.copilot",
+		"onecentlin.laravel-blade",
+		"shufo.vscode-blade-formatter",
+		"bmewburn.vscode-intelephense-client"
 	],
     "settings": {
         "#terminal.integrated.shell.linux": "/bin/bash",

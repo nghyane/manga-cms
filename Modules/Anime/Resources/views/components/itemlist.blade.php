@@ -2,32 +2,32 @@
     @foreach ($animes as $anime)
         <li>
             <div class="inner ">
-                <a class="poster tooltipstered" href="{{ get_anime_url($anime) }}" data-tip="{{ $anime->id }}">
-                    <img src="https://static.bunnycdn.ru/i/cache/images/e/e3/e33e1884bfb546ce1752b7442c6e175a.jpg">
-                    <div class="type">MUSIC</div>
+                <a class="poster tooltipstered" href="{{ $anime->url() }}" data-tip="{{ $anime->id }}">
+                    <img src="{{ $anime->cover() }}">
+                    <div class="type">{{ $anime->type() }}</div>
                     <div class="meta">
                         <div class="ep-status-wrap">
-                            <span class="ep-status sub"><span></span></span>
-                            <span class="ep-status total"><span>1</span></span>
+                            <span class="ep-status sub"><span>{{ $anime->getMeta('ep-status-sub') }}</span></span>
+                            <span class="ep-status total"><span>{{ $anime->getMeta('ep-status-total') }}</span></span>
                         </div>
                     </div>
                 </a>
                 <div class="info">
                     <div class="name">
                         <h3>
-                            <a href="{{ get_anime_url($anime) }}" class="d-title"
+                            <a href="{{ $anime->url() }}" class="d-title"
                                 data-jp="{{ $anime->name }}">{{ $anime->name }}</a>
                         </h3>
                     </div>
                     <div class="meta">
-                        <span class="dot">MUSIC</span>
+                        <span class="dot">{{ $anime->type() }}</span>
                         <span class="dot">
                             <span class="ep-status-wrap">
                                 <span class="ep-status sub">
-                                    <span></span>
+                                    <span>{{ $anime->getMeta('ep-status-sub') }}</span>
                                 </span>
                                 <span class="ep-status total">
-                                    <span>1</span>
+                                    <span>{{ $anime->getMeta('ep-status-total') }}</span>
                                 </span>
                             </span>
                         </span>
