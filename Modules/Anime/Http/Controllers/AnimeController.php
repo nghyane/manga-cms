@@ -17,21 +17,12 @@ class AnimeController extends Controller
         $id = decode_id($id);
         $anime = \Modules\Anime\Entities\Anime::find($id)->first();
 
-        print_r($anime->toArray());
-
-        die;
-
         if ($anime->slug != $slug) {
 
             return redirect()->route('anime', ['id' => encode_id($anime->id), 'slug' => $anime->slug]);
         }
 
-
-        // $anime->views = $anime->views + 1;
-        // $anime->save();
-
-        print_r($metas->toArray());
-
+        $metas = $anime->getAllMeta();
         $episodes = $anime->episodes()->orderBy('name', 'desc')->paginate(20);
 
         return view('anime::pages.watch', compact('anime', 'episodes'));

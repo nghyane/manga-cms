@@ -39,7 +39,7 @@ class $CLASS$ extends Command
      */
     public function handle()
     {
-        //
+
     }
 
     /**
@@ -49,9 +49,7 @@ class $CLASS$ extends Command
      */
     protected function getArguments()
     {
-        return [
-            ['example', InputArgument::REQUIRED, 'An example argument.'],
-        ];
+
     }
 
     /**

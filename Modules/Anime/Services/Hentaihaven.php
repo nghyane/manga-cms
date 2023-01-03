@@ -113,14 +113,7 @@ class Hentaihaven extends AnimeCrawler
 
 
                 // insert meta anime
-                foreach ($metas as $key => $value) {
-                    $anime->meta()->updateOrCreate([
-                        'meta_key' => $key,
-                    ], [
-                        'meta_value' => $value,
-                    ]);
-                }
-
+                $anime->setManyMeta($metas);
 
                 // insert episode
 

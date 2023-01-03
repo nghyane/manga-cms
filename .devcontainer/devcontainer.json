@@ -19,10 +19,12 @@
 		"GitHub.copilot"
 	],
     "settings": {
-        "#terminal.integrated.shell.linux": "/bin/bash"
+        "#terminal.integrated.shell.linux": "/bin/bash",
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true
     },
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    "forwardPorts": [80],
+    "forwardPorts": [80, 6379],
 
     // run install script after container is created
 	"postCreateCommand": "",

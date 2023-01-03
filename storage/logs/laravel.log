@@ -6816,3 +6816,20 @@ HINT:  Use DROP ... CASCADE to drop the dependent objects too. at /workspaces/ma
 #26 /workspaces/manga-cms/artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
 #27 {main}
 "} 
+[2023-01-03 02:13:12] local.ERROR: Command "anime:hentaihaven" is not defined.
+
+Did you mean one of these?
+    anime:start
+    anime:uploader {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"anime:hentaihaven\" is not defined.
+
+Did you mean one of these?
+    anime:start
+    anime:uploader at /workspace/vendor/symfony/console/Application.php:702)
+[stacktrace]
+#0 /workspace/vendor/symfony/console/Application.php(256): Symfony\\Component\\Console\\Application->find('anime:hentaihav...')
+#1 /workspace/vendor/symfony/console/Application.php(168): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#2 /workspace/vendor/laravel/framework/src/Illuminate/Console/Application.php(102): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#3 /workspace/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(155): Illuminate\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#4 /workspace/artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#5 {main}
+"} 
