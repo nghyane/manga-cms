@@ -12,3 +12,4 @@ npm-debug.log
 yarn-error.log
 package-lock.json
 /Modules/*/node_modules
+storage/logs/laravel.log
