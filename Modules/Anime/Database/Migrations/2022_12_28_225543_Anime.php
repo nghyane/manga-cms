@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
+// cache
+use Illuminate\Support\Facades\Cache;
+
 return new class extends Migration
 {
     /**
@@ -35,7 +38,11 @@ return new class extends Migration
             $table->foreignId('anime_id')->constrained('animes');
             $table->text('description')->nullable()->default(null); // episode description (optional)
             $table->string('name');
+            $table->double('number')->default(0); // episode number
+            $table->tinyInteger('subbed')->default(0); // has subbed version
+            $table->tinyInteger('dubbed')->default(0); // has dubbed version
             $table->string('slug');
+
             $table->timestamps();
         }); // to create episode model run: php artisan make:model Episode -m
 
@@ -168,6 +175,6 @@ return new class extends Migration
 
 
         // clear cache
-        Artisan::call('cache:clear');
+        Cache::flush();
     }
 };

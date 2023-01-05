@@ -1,39 +1,43 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
     "name": "codespaces-laravel",
-    "dockerComposeFile": ["docker-compose.yml"],
+    "dockerComposeFile": [
+        "docker-compose.yml"
+    ],
     "workspaceFolder": "/workspace",
     "service": "app",
     "shutdownAction": "stopCompose",
     "extensions": [
-		"editorconfig.editorconfig",
-		"ryannaddy.laravel-artisan",
-		"amiralizadeh9480.laravel-extra-intellisense",
-		"stef-k.laravel-goto-controller",
-		"codingyu.laravel-goto-view",
-		"mikestead.dotenv",
-		"eg2.tslint",
-		"christian-kohler.path-intellisense",
-		"esbenp.prettier-vscode",
-		"CoenraadS.bracket-pair-colorizer",
-		"GitHub.copilot",
-		"onecentlin.laravel-blade",
-		"shufo.vscode-blade-formatter",
-		"bmewburn.vscode-intelephense-client"
-	],
+        "editorconfig.editorconfig",
+        "ryannaddy.laravel-artisan",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "stef-k.laravel-goto-controller",
+        "codingyu.laravel-goto-view",
+        "mikestead.dotenv",
+        "eg2.tslint",
+        "christian-kohler.path-intellisense",
+        "esbenp.prettier-vscode",
+        "CoenraadS.bracket-pair-colorizer",
+        "GitHub.copilot",
+        "onecentlin.laravel-blade",
+        "shufo.vscode-blade-formatter",
+        "bmewburn.vscode-intelephense-client"
+    ],
     "settings": {
         "#terminal.integrated.shell.linux": "/bin/bash",
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true
     },
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    "forwardPorts": [80, 6379],
-
+    "forwardPorts": [
+        80,
+        5432
+    ],
     // run install script after container is created
-	"postCreateCommand": "",
-	"portsAttributes": {
-		"80": {
-			"label": "HTTP"
-		}
-	}
+    "postCreateCommand": "",
+    "portsAttributes": {
+        "80": {
+            "label": "HTTP"
+        }
+    }
 }

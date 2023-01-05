@@ -18,7 +18,12 @@ class AnimeController extends Controller
     public function anime($id, $slug, $episode_slug = null) // <--- this is the function that is called when you visit /{id}-f{slug}
     {
         $id = decode_id($id);
-        $anime = \Modules\Anime\Entities\Anime::where('id', $id)->with('episodes', 'tags', 'genres', 'studio', 'country')->first();
+        $anime = \Modules\Anime\Entities\Anime::where('id', $id)->with('tags', 'genres', 'studio', 'country')->first();
+
+        if (!$anime) {
+            abort(404);
+        }
+
 
         if ($anime->slug != $slug) {
             // if debug mode is on, we will not redirect
@@ -29,6 +34,7 @@ class AnimeController extends Controller
             throw new \Exception('Slug is not correct');
         }
 
+        // SEO and meta tags
         $this->seo()
             ->setTitle($anime->name)
             ->setDescription($anime->description)
@@ -44,20 +50,21 @@ class AnimeController extends Controller
         $studio = $anime->studio;
         $country = $anime->country;
 
-        $episodes = $anime->episodes;
         $episode = null;
         if ($episode_slug) {
-            $episode = $episodes->where('slug', $episode_slug)->where('anime_id', $anime->id)->first();
+            $episode = $anime->episodes()->where('slug', $episode_slug)->first();
             if ($episode) {
                 $this->seo()
                     ->setTitle($anime->name . ' - ' . $episode->name)
                     ->setDescription($anime->description)
                     ->setCanonical(
-                        $episode->url()
+                        $episode->url($anime)
                     );
             }
         }
 
-        return view('anime::pages.watch', compact('anime', 'episodes', 'episode', 'metas', 'tags', 'genres',  'studio', 'country'));
+        $episodes = $anime->episodes()->orderBy('number', 'asc')->get();
+
+        return view('anime::pages.watch', compact('anime', 'episode', 'episodes', 'metas', 'tags', 'genres',  'studio', 'country'));
     }
 }

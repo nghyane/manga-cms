@@ -17,6 +17,9 @@ class Episode extends Model
         'slug',
         'description',
         'anime_id',
+        'number',
+        'subbed',
+        'dubbed',
     ];
 
     protected static function newFactory()
@@ -26,7 +29,7 @@ class Episode extends Model
 
     public function anime()
     {
-        return $this->belongsTo(Anime::class);
+        return $this->belongsTo(Anime::class, 'anime_id', 'id');
     }
 
     public function video()
@@ -39,4 +42,8 @@ class Episode extends Model
         return $this->hasOne(EpisodeQueue::class);
     }
 
+    public function url($anime)
+    {
+        return $anime->url() . "/$this->slug";
+    }
 }

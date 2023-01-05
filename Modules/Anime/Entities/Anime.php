@@ -10,7 +10,7 @@ use Plank\Metable\Metable;
 
 class Anime extends Model
 {
-    use HasFactory, Cachable, Metable;
+    use HasFactory, Metable;
 
 
     const STATUS_ONGOING = 1;

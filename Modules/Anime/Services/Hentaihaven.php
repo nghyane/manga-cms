@@ -34,7 +34,7 @@ class Hentaihaven extends AnimeCrawler
 
     public function crawl()
     {
-        $urls = $this->getUrls(1);
+        $urls = $this->getUrls(2);
         $promises = [];
 
         foreach ($urls as $url) {
@@ -139,8 +139,9 @@ class Hentaihaven extends AnimeCrawler
                     $episode_url = $this->base_url . parse_url($a->attr('href'), PHP_URL_PATH) . '/';
 
                     $episode = $anime->episodes()->create([
-                        'name' => $a->text(),
+                        'name' => $episode_name,
                         'slug' => \Illuminate\Support\Str::slug($a->text()),
+                        'number' => $episode_name,
                     ]);
 
                     $episode->queue()->create([

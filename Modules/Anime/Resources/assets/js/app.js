@@ -4,27 +4,7 @@ let watchConfig = {
     'autoSkip': false,
 }
 
-// get episodes
-const getEpisodes = function (anime_id, callback) {
-    $.ajax({
-        url: `/api/anime/${anime_id}/episodes`,
-        async: false,
-        success: callback || function (data) {
-            console.log(data);
-        }
-    });
-}
-
-// get episode
-const getEpisode = function (anime_id, episode_id, callback) {
-    $.ajax({
-        url: `/api/anime/${anime_id}/episode/${episode_id}`,
-        async: false,
-        success: callback || function (data) {
-            console.log(data);
-        }
-    });
-}
+// Event callback when click change episode
 
 const Anime = {
     init: function () {
@@ -73,15 +53,43 @@ const Anime = {
     },
 
     initWatchPage: function () {
-        const anime = $('.watchpage').data('anime');
-        const episode = $('.watchpage').data('episode')
+        let anime = $('.watchpage').data('anime');
+        let episode = $('.watchpage').data('episode')
 
-        console.log(anime);
+        // get episodes
+        const getEpisodes = function (anime_id, callback) {
+            $.ajax({
+                url: `/api/anime/${anime_id}/episodes`,
+                async: false,
+                success: callback || function (data) {
+                    console.log(data);
+                }
+            });
+        }
+
+        const displayRange = function (range) {
+            $('.ep-range').hide();
+
+            $(".filter.range button").html(range);
+            $(`.ep-range[data-range="${range}"]`).show();
+        }
 
         const updateWatchConfig = function (config, $element) {
             watchConfig[config] = !watchConfig[config];
             turnOrOff(watchConfig[config], $element);
             localStorage.setItem('watchConfig', JSON.stringify(watchConfig));
+        }
+
+        const turnOrOff = function (config, $element) {
+            if (config) {
+                $element.html(
+                    $element.data('on')
+                );
+            } else {
+                $element.html(
+                    $element.data('off')
+                );
+            }
         }
 
         // get watchConfig from localstorage
@@ -104,17 +112,6 @@ const Anime = {
 
         $('body').append($overlayElm);
 
-        const turnOrOff = function (config, $element) {
-            if (config) {
-                $element.html(
-                    $element.data('on')
-                );
-            } else {
-                $element.html(
-                    $element.data('off')
-                );
-            }
-        }
 
         $overlay.on('click', function () {
             // add z-index to
@@ -155,15 +152,79 @@ const Anime = {
 
         // get episodes CHECK IF ANIME NOT NULL
         if (typeof (anime) !== 'undefined' && anime !== null) {
-            getEpisodes(anime.id, function (data) {
+            // getEpisodes(anime.id, function (res) {
+            //     if (res.status == 'success') {
+            //         $("#episodes").html(res.data);
 
-            });
+
+            //     }
+            // });
+
+            if ($('[data-dub="1"]').length < 1 || $('[data-sub="1"]').length < 1) {
+                $(".filter.type").hide();
+            }
+
+            let currentEp = episode ? $(`[data-episode-id="${episode.id}"] .ep-link`) : $("#episodes").find('.ep-link').first();
+            currentEp.click();
+            currentEp.addClass('active');
+
+            let currentRange = $(currentEp).parents('.ep-range').data('range');
+
+            displayRange(currentRange);
         }
+
+
+        // add event change range
+        $(document).on('click', '.filter.range .dropdown-item', function () {
+            let range = $(this).data('value');
+
+            console.log(range);
+
+            displayRange(range);
+        });
 
 
     },
 
 };
+
+
+class SPA {
+    constructor(root) {
+        this.root = root;
+        this.init();
+    }
+
+    goTo(url) {
+        // send ajax request to url
+        $.ajax({
+            url: url,
+            success: function (res) {
+                if (res.status == 'success') {
+                    // push state
+                    this.pushState(url);
+                    // replace content
+                    $(this.root).html(res.data);
+                    Anime.init();
+                }
+            }
+        });
+    }
+
+    pushState(url) {
+        history.pushState({}, '', url);
+    }
+
+    init() {
+        // listen state change
+        window.addEventListener('popstate', function (e) {
+            e.preventDefault();
+            // go to current url
+            this.goTo(window.location.href);
+        });
+    }
+}
+
 
 
 Anime.init();

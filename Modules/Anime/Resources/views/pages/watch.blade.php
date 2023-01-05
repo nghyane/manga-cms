@@ -13,7 +13,7 @@
         ? [
             'id' => $episode->id,
             'slug' => $episode->slug,
-            'url' => $episode->url(),
+            'url' => $episode->url($anime),
             'name' => $episode->name,
         ]
         : null;
@@ -82,7 +82,7 @@
 
                 <div id="servers"></div>
                 <section id="episodes">
-
+                    @include('anime::partials.episodes')
                 </section>
                 <div class="addthis_inline_share_toolbox text-center"></div>
                 <section class="collapse" id="info">
