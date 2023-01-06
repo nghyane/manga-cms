@@ -34,11 +34,17 @@ export default defineConfig({
                 __dirname + '/Resources/views/**',
                 __dirname + '/Resources/assets/js/**',
             ],
-            content: ['index.html', 'Resources/views/**/*.{vue,html,php,js,ts,jsx,tsx}'],
+            content: [
+                '/Resources/views/**/*.{vue,html,php,js,ts,jsx,tsx}',
+                '/Resources/assets/js/**/*.{vue,html,php,js,ts,jsx,tsx}',
+            ],
             // .tooltip, .tooltip-inner, .tooltip-arrow, .highlight
             safelist: {
-                standard: ['tooltip$', 'highlight'],
+                standard: ['tooltip$', '/^highlight/', '/^label/'],
+                deep: [/^tooltip/, /^highlight/, /^label/],
+                greedy: [/^tooltip/, /^highlight/, /^label/],
             },
+
 
         })
     ],

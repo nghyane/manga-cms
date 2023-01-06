@@ -10929,7 +10929,7 @@ header.static .wrapper {
     border-bottom: 1px solid #242424
 }
 
-header.static #search {
+header #search {
     display: inline-block
 }
 
@@ -13580,17 +13580,17 @@ ul.letters li a.active {
     align-items: center
 }
 
-#servers .servers .type label {
+#servers .servers .type .label {
     min-width: 80px;
     display: block;
     margin: 0
 }
 
-#servers .servers .type div {
+#servers .servers .type .list {
     flex-grow: 1
 }
 
-#servers .servers .type div a {
+#servers .servers .type .list a {
     display: inline-block;
     padding: 5px 10px 3px;
     background: #262626;
@@ -13600,8 +13600,8 @@ ul.letters li a.active {
     margin: 2px 0
 }
 
-#servers .servers .type div a.active,
-#servers .servers .type div a:hover {
+#servers .servers .type .list a.active,
+#servers .servers .type .list a:hover {
     background: #ced4da;
     color: #242424
 }
@@ -13730,7 +13730,7 @@ section#episodes ul.ep-range li a.active {
 }
 
 @media (max-width:767.98px) {
-    #servers .servers .type div a {
+    #servers .servers .type .list a {
         margin-bottom: 5px
     }
 
@@ -13751,7 +13751,7 @@ section#episodes ul.ep-range li a.active {
         clear: both
     }
 
-    #servers .servers .type div {
+    #servers .servers .type .list {
         overflow: hidden;
         width: 100%;
         display: block;

@@ -10,7 +10,7 @@ return [
 
 
     'nftstorage' => [
-        'api_key' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweENGMWRENUE1NTE0M2ZDYzEyOTYyMzJFRDUyQjA1NjhEOUE0MDRDNGYiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3MjQ1MTQ2Mzc4MiwibmFtZSI6Ik5naHlhbmUifQ.d46-ZzNwxHlYQdFfQ8ZXxvmITXMhZLx3Oj5sUn5sOmw'
+        'api_key' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDFEMTAzQzM0OTMzNTU0OUNlMDdFNUNBMDk4NDMyYmRCRjAxOTY1OTEiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3MzAyMDg1NzI0NywibmFtZSI6IkFwaTIifQ.73nNMUjRt_Ztbw2djDhJ_-AO6_Vl8kd4T-lzHECnyG8'
 
     ]
 ];

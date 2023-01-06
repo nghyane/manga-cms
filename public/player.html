@@ -1,33 +1,39 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Advance P2P VanLong Streaming</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ssl.p.jwpcdn.com/player/v/8.1.3/jwplayer.js"></script>
+
+
+</head>
 
 <body>
-    <div id="playerContainer"></div>
-    <script src="https://cdn.jsdelivr.net/npm/indigo-player@1/lib/indigo-player.js"></script>
+    <div id="main-view">
+        <div>
+            <div id="video" class="text-center"></div>
+
+        </div>
+    </div>
     <script>
-        const config = {
-            sources: [
-                {
-                    type: 'hls',
-                    src: '/storage/episodes/4/playlist.m3u8',
-                }
-            ],
-            controls: true,
-            autoplay: true,
-            cache: true,
-            preload: 'auto',
-            embed: true,
-        };
+        window.trackers = ["wss://tracker.btorrent.xyz/", "wss://tracker.openwebtorrent.com/"];
+        jwplayer.key = "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99";
 
-        const element = document.getElementById('playerContainer');
-        const player = IndigoPlayer.init(element, config);
-
-        player.on('ready', () => {
-            console.log('Player is ready');
+        jwplayer("video").setup({
+            "file": urlVideo,
+            "image": urlImage,
+            "width": "100%",
+            "height": "100%",
         });
 
-        player.on('error', (error) => {
-            console.log('Player error', error);
-        });
+        // var provider = require("@hola.org/jwplayer-hlsjs");
+        // provider.attach();
+
     </script>
 </body>
 

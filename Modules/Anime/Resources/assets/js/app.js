@@ -4,8 +4,9 @@ let watchConfig = {
     'autoSkip': false,
 }
 
+
 const stringCipher = function (string, shift) {
-    string = window.atob(string);
+    string = decodeURIComponent(window.atob(string));
 
     var encoded_string = "";
     for (var i = 0; i < string.length; i++) {
@@ -35,6 +36,32 @@ const stringCipher = function (string, shift) {
     return encoded_string;
 }
 
+const loadScript = (FILE_URL, async = true, type = "text/javascript") => {
+    return new Promise((resolve, reject) => {
+        try {
+            const scriptEle = document.createElement("script");
+            scriptEle.type = type;
+            scriptEle.async = async;
+            scriptEle.src = FILE_URL;
+
+            scriptEle.addEventListener("load", (ev) => {
+                resolve({ status: true });
+            });
+
+            scriptEle.addEventListener("error", (ev) => {
+                reject({
+                    status: false,
+                    message: `Failed to load the script ＄{FILE_URL}`
+                });
+            });
+
+            document.body.appendChild(scriptEle);
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 const Anime = {
     init: function () {
         // if has .watchpage
@@ -50,27 +77,29 @@ const Anime = {
                 $(this).tooltip('show');
             });
 
-            $(".gotop").click(function () {
+            $(document).on('click', ".gotop", function () {
                 $("html, body").animate({ scrollTop: 0 }, "slow");
                 return false;
             });
 
-            $(".toggler").on('click', function () {
-                // toggle text content
-                $(this).parents('.shorting').toggleClass('expand');
-                // [more] to [less] or [less] to [more] content
-                $(this).html($(this).html() == '[more]' ? '[less]' : '[more]');
-            });
+            $(document).on('click', "#menu-toggler", function () {
+                // style hide or show
+                $("#menu").slideToggle({
+                    duration: 200,
+                });
+            })
 
-            $(".switch").on('click', function () {
-                // data-switch="title_lang"
-                $(this).find('.active').removeClass('active');
+        });
 
+        $("#search").click(function () {
+            $(this).toggleClass("show");
 
-                let $switch = $(this).data('switch');
-                let $switchElm = $(`[data-switch="${$switch}"]`);
-
-                $switchElm.html($switchElm.data($lang));
+            // the click not inside the from close the form
+            $(document).mouseup(function (e) {
+                console.log(e.target);
+                if (!$("form").is(e.target) || $("form").has(e.target).length === 0) {
+                    $("#search").removeClass("show");
+                }
             });
         });
 
@@ -152,10 +181,6 @@ const Anime = {
         });
 
 
-        if (watchConfig.autoPlay) {
-            $(".play").click();
-        }
-
         const initToggle = {
             autoPlay: function () {
                 turnOrOff(watchConfig.autoPlay, $autoPlay);
@@ -217,26 +242,116 @@ const Anime = {
             displayRange(currentRange);
         }
 
-        // filter input
-        $(document).on('keyup', '.filter input', function () {
-            let filter = $(this).val().toLowerCase();
-            $('.ep-link').removeClass('highlight');
+        $(document).ready(function () {
 
-            $("[data-episode-num='" + filter + "']").find('.ep-link').addClass('highlight');
-        });
+            // filter input
+            $(document).on('keyup', '.filter input', function () {
+                let filter = $(this).val().toLowerCase();
+                $('.ep-link').removeClass('highlight');
+
+                $("[data-episode-num='" + filter + "']").find('.ep-link').addClass('highlight');
+            });
 
 
-        // add event change range
-        $(document).on('click', '.filter.range .dropdown-item', function () {
-            let range = $(this).data('value');
+            // add event change range
+            $(document).on('click', '.filter.range .dropdown-item', function () {
+                let range = $(this).data('value');
 
-            console.log(range);
+                console.log(range);
 
-            displayRange(range);
+                displayRange(range);
+            });
+
+            $(document).on('click', ".toggler", function () {
+                // toggle text content
+                $(this).parents('.shorting').toggleClass('expand');
+                // [more] to [less] or [less] to [more] content
+                $(this).html($(this).html() == '[more]' ? '[less]' : '[more]');
+            });
+
+
+            $(document).on('click', ".switch", function () {
+                // data-switch="title_lang"
+                $(this).find('.active').removeClass('active');
+
+
+                let $switch = $(this).data('switch');
+                let $switchElm = $(`[data-switch="${$switch}"]`);
+
+                $switchElm.html($switchElm.data($lang));
+            });
+
+
+            $(document).on('click', '.servers a', function (e) {
+                e.preventDefault();
+
+                let $this = $(this);
+                let url = $this.data('url');
+                let type = $this.data('type');
+
+                $('.servers a').removeClass('active');
+                $this.addClass('active');
+
+                Anime.initPlayer(url, type);
+            });
+
+            $(document).on('click', '.play', function (e) {
+                $('.servers a').first().trigger('click');
+            });
+
+            if (watchConfig.autoPlay) {
+                $(".play").click();
+            }
         });
 
 
     },
+
+    initPlayer: async function (url, type = 'mp4') {
+        url = stringCipher(url, 21);
+        const playerEle = document.getElementById('player');
+        var bg_img = $("backdrop").css("background-image");
+
+        //clear Player
+        playerEle.innerHTML = '';
+
+        const config = {
+            "file": url,
+            "image": bg_img,
+            "width": "100%",
+            "height": "100%",
+            "autostart": true,
+            "mute": true,
+            "controls": true,
+        };
+
+
+        // check script IndigoPlayer
+        if (typeof (jwplayer) == 'undefined') {
+            // add script
+            await loadScript('https://ssl.p.jwpcdn.com/player/v/8.1.3/jwplayer.js');
+
+            jwplayer.key = "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99";
+        }
+
+        var player = jwplayer(playerEle).setup(config);
+
+        player.on('ready', function () {
+            if (!watchConfig.autoPlay) {
+                player.play();
+            }
+        });
+
+        player.onComplete(function () {
+            if (watchConfig.autoNext) {
+                let $nextEp = $('.ep-link.active').parents('.ep-range').next().find('.ep-link').first();
+
+                if ($nextEp.length > 0) {
+                    $nextEp.click();
+                }
+            }
+        });
+    }
 
 };
 

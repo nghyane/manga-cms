@@ -17,11 +17,11 @@ class WatchHentai extends AnimeCrawler
 {
 
     public $baseURL = 'https://watchhentai.net';
-    public $maxPage = 1;
+    public $maxPage = 40;
 
     public $pageFormat = 'https://watchhentai.net/series/page/%s';
 
-    public function __construct($maxPage = 1)
+    public function __construct($maxPage = 40)
     {
         $this->maxPage = $maxPage;
 
@@ -40,6 +40,8 @@ class WatchHentai extends AnimeCrawler
     {
         // set default options
         for ($i = 1; $i <= $this->maxPage; $i++) {
+            $this->writeln(sprintf('Crawling page %s', $i));
+
             Http::async()->get(sprintf($this->pageFormat, $i))->then(function ($response) use ($i) {
                 // parse response get all urls add to queue
                 // new dom crawler
@@ -151,12 +153,23 @@ class WatchHentai extends AnimeCrawler
             // get episodes
             $crawler->filter('.se-a .episodios li')->each(function ($node) use ($anime) {
 
-                $thumnail = $node->filter('img')->attr('data-src');
+                if ($node->filter('img')->count() > 0) {
+                    $thumnail = $node->filter('img')->attr('data-src');
+                }
 
                 $name = $node->filter('.episodiotitle a')->text();
+                $name = trim($name);
+
+
+
                 preg_match('/Episode\s(\d+)/', $name, $matches);
+                if (!isset($matches[1])) {
+                    return;
+                }
+
                 $name = $matches[1];
                 $url = $node->filter('.episodiotitle a')->attr('href');
+
 
                 // check episode exists
                 $episode = Episode::firstOrNew([
@@ -174,10 +187,11 @@ class WatchHentai extends AnimeCrawler
                 $episode->number = $name;
                 $episode->subbed = true;
 
-                if ($thumnail) {
+                if (isset($thumnail)) {
                     // save thumbnail sync sink
                     $thumnail_data = Http::get($thumnail, Http::getOptions())->body();
                     // Save to storage
+
                     $path = sprintf('public/thumbnail/%s/episodes/%s.jpg', $anime->slug, $episode->slug);
                     Storage::put($path, $thumnail_data);
 

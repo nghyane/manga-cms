@@ -23,68 +23,73 @@
     <div class="watchpage" data-anime='@json($anime_public)' data-episode='@json($episode_public)'>
         <div class="main">
             <div class="inner">
-                <section class="my-0">
-                    <div class="heading sline">
-                        <h1 class="title d-title" data-jp="{{ $metas->get('alternative') }}">{{ $anime->name }}</h1>
-                    </div>
-
-                    @if (config('anime.wacth_notif'))
-                        <div class="alert alert-warning">
-                            {{ config('anime.wacth_notif') }}
+                @if (!empty($episode))
+                    <section class="my-0">
+                        <div class="heading sline">
+                            <h1 class="title d-title" data-jp="{{ $metas->get('alternative') }}">{{ $anime->name }}</h1>
                         </div>
-                    @endif
 
-                    <div class="content">
-                        <div class="player-wrapper">
-                            <div id="player">
-                                <div class="backdrop" style="background-image: url('{{ $episode->thumbnail }}')">
-                                </div>
-                                <div class="play"></div>
+                        @if (config('anime.wacth_notif'))
+                            <div class="alert alert-warning">
+                                {{ config('anime.wacth_notif') }}
                             </div>
-                        </div>
-                        <div class="controls">
-                            <div class="ctrl onoff tip auto-play" data-default="1" data-name="auto_play"
-                                data-off='<i class="fas fa-square" style="font-weight: 400"></i></i> Auto Play'
-                                data-on='<i class="fas fa-check-square" style="font-weight: 400"></i> Auto Play'
-                                data-persist="true" title="Toggle auto play"></div>
-                            <div class="ctrl onoff tip auto-next" data-default="1" data-name="auto_next"
-                                data-off='<i class="fas fa-square" style="font-weight: 400"></i> Auto Next'
-                                data-on='<i class="fas fa-check-square" style="font-weight: 400"></i> Auto Next'
-                                data-persist="true" title="Toggle auto next"></div>
-                            <div class="ctrl onoff tip auto-skip text-warning" data-default="0" data-name="auto_skip_intro"
-                                data-off='<i class="fas fa-square" style="font-weight: 400"></i> Auto Skip'
-                                data-on='<i class="fas fa-check-square" style="font-weight: 400"></i> Auto Skip'
-                                data-persist="true" title="Toggle auto skip intro"></div>
-                            <div class="ctrl light tip" data-default="1" title="Toggle light">
-                                <i class="fa fa-adjust"></i> Light
-                            </div>
-                            <div class="ctrl dropdown bookmark" data-fetch="true" data-id="3835">
-                                <div data-add='<i class="fas fa-bookmark"></i> Add to list'
-                                    data-edit='<i class="fas fa-pen"></i> Edit watch list' data-placeholder="false"
-                                    data-toggle="dropdown"></div>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <div class="folders"></div>
+                        @endif
+
+                        <div class="content">
+                            <div class="player-wrapper">
+                                <div id="player">
+                                    <div class="backdrop" style="background-image: url('{{ $episode->thumbnail }}')">
+                                    </div>
+                                    <div class="play"></div>
                                 </div>
                             </div>
-                            <div class="ctrl onoff shortcuts tip" data-target="#shortcuts" data-toggle="collapse"
-                                title="Player shortcuts">
-                                <i class="fa fa-keyboard"></i> {{ __('shortcuts') }}
-                            </div>
-                            <div class="ctrl share" data-target="#md-share" data-toggle="modal">
-                                <i class="fa fa-share"></i> {{ __('share') }}
+                            <div class="controls">
+                                <div class="ctrl onoff tip auto-play" data-default="1" data-name="auto_play"
+                                    data-off='<i class="fas fa-square" style="font-weight: 400"></i></i> Auto Play'
+                                    data-on='<i class="fas fa-check-square" style="font-weight: 400"></i> Auto Play'
+                                    data-persist="true" title="Toggle auto play"></div>
+                                <div class="ctrl onoff tip auto-next" data-default="1" data-name="auto_next"
+                                    data-off='<i class="fas fa-square" style="font-weight: 400"></i> Auto Next'
+                                    data-on='<i class="fas fa-check-square" style="font-weight: 400"></i> Auto Next'
+                                    data-persist="true" title="Toggle auto next"></div>
+                                <div class="ctrl onoff tip auto-skip text-warning" data-default="0"
+                                    data-name="auto_skip_intro"
+                                    data-off='<i class="fas fa-square" style="font-weight: 400"></i> Auto Skip'
+                                    data-on='<i class="fas fa-check-square" style="font-weight: 400"></i> Auto Skip'
+                                    data-persist="true" title="Toggle auto skip intro"></div>
+                                <div class="ctrl light tip" data-default="1" title="Toggle light">
+                                    <i class="fa fa-adjust"></i> Light
+                                </div>
+                                <div class="ctrl dropdown bookmark" data-fetch="true" data-id="3835">
+                                    <div data-add='<i class="fas fa-bookmark"></i> Add to list'
+                                        data-edit='<i class="fas fa-pen"></i> Edit watch list' data-placeholder="false"
+                                        data-toggle="dropdown"></div>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <div class="folders"></div>
+                                    </div>
+                                </div>
+                                <div class="ctrl onoff shortcuts tip" data-target="#shortcuts" data-toggle="collapse"
+                                    title="Player shortcuts">
+                                    <i class="fa fa-keyboard"></i> {{ __('shortcuts') }}
+                                </div>
+                                <div class="ctrl share" data-target="#md-share" data-toggle="modal">
+                                    <i class="fa fa-share"></i> {{ __('share') }}
+                                </div>
                             </div>
                         </div>
+                    </section>
+
+                    @include('anime::partials.shortcuts')
+
+                    <div id="servers">
+                        @include('anime::partials.servers')
                     </div>
-                </section>
 
-                @include('anime::partials.shortcuts')
+                    <section id="episodes">
+                        @include('anime::partials.episodes')
+                    </section>
+                @endif
 
-                <div id="servers">
-                    
-                </div>
-                <section id="episodes">
-                    @include('anime::partials.episodes')
-                </section>
                 <div class="addthis_inline_share_toolbox text-center"></div>
                 <section class="collapse" id="info">
                     <div class="poster">

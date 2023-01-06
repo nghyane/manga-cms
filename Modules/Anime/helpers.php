@@ -63,6 +63,6 @@ if (!function_exists('stringCipher')) {
                 $encoded_string .= $char;
             }
         }
-        return base64_encode($encoded_string);
+        return base64_encode(urlencode($encoded_string));
     }
 }
