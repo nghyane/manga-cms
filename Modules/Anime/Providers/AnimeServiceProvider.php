@@ -45,6 +45,7 @@ class AnimeServiceProvider extends ServiceProvider
         $this->commands([
             \Modules\Anime\Console\HentaiHaven::class,
             \Modules\Anime\Console\AnimeUploader::class,
+            \Modules\Anime\Console\ScraperInit::class,
         ]);
     }
 
@@ -59,7 +60,8 @@ class AnimeServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower
+            module_path($this->moduleName, 'Config/config.php'),
+            $this->moduleNameLower
         );
     }
 

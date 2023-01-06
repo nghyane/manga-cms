@@ -5,9 +5,11 @@ namespace Modules\Anime\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Alex433\LaravelEloquentCache\Cachable;
+
 class Country extends Model
 {
-    use HasFactory;
+    use HasFactory, Cachable;
 
     protected $table = 'countries';
 

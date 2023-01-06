@@ -6,11 +6,6 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class AnimeCrawler
 {
-    public function crawl()
-    {
-        //
-    }
-
     public function writeln($message)
     {
         if (php_sapi_name() == 'cli') {
@@ -53,7 +48,7 @@ class AnimeCrawler
      * @param array $genres anime genres
      * @return array
      */
-    function genresInsert($genres)
+    function genresInsert($anime, $genres)
     {
         $ids = [];
 
@@ -68,6 +63,43 @@ class AnimeCrawler
 
             $ids[] = $genre->id;
         }
+
+        $attached = $anime->genres()->pluck('genre_id')->toArray();
+        $ids = array_diff($ids, $attached);
+
+        // attach if not exists
+        $anime->genres()->attach($ids);
+
+        return $ids;
+    }
+
+    /**
+     * Create studios if not exists
+     *
+     * @param array $studio anime studio
+     * @return array
+     */
+    function studiosInsert($anime, $studios)
+    {
+        $ids = [];
+
+        foreach ($studios as $studio_name) {
+            $studio_slug = \Illuminate\Support\Str::slug($studio_name);
+            $studio = \Modules\Anime\Entities\Studio::firstOrNew([
+                'slug' => $studio_slug,
+            ]);
+
+            $studio->name = $studio_name;
+            $studio->save();
+
+            $ids[] = $studio->id;
+        }
+
+        // attachUnique
+        $attached = $anime->studio()->pluck('studio_id')->toArray();
+        $ids = array_diff($ids, $attached);
+
+        $anime->studio()->attach($ids);
 
         return $ids;
     }

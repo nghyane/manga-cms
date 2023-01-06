@@ -4,7 +4,36 @@ let watchConfig = {
     'autoSkip': false,
 }
 
-// Event callback when click change episode
+const stringCipher = function (string, shift) {
+    string = window.atob(string);
+
+    var encoded_string = "";
+    for (var i = 0; i < string.length; i++) {
+        var char = string[i];
+        if (char.match(/[a-z]/i)) {
+            var code = char.charCodeAt(0);
+            if (char.match(/[A-Z]/)) {
+                code += shift;
+                if (code > 90) {
+                    code = 65 + (code - 91);
+                } else if (code < 65) {
+                    code = 91 - (65 - code);
+                }
+            } else {
+                code += shift;
+                if (code > 122) {
+                    code = 97 + (code - 123);
+                } else if (code < 97) {
+                    code = 123 - (97 - code);
+                }
+            }
+            encoded_string += String.fromCharCode(code);
+        } else {
+            encoded_string += char;
+        }
+    }
+    return encoded_string;
+}
 
 const Anime = {
     init: function () {
@@ -105,13 +134,12 @@ const Anime = {
         let $playerWrapper = $(".player-wrapper");
         let $autoPlay = $controls.find('.auto-play');
         let $autoNext = $controls.find('.auto-next');
+        let $autoSkip = $controls.find('.auto-skip');
         let $overlay = $controls.find('.light');
 
         let $overlayElm = $('<div style="width: 100%; height: 100%; position: fixed; left: 0px; top: 0px; z-index: 22; background: rgb(0, 0, 0); opacity: 0.95; display: none;"></div>');
 
-
         $('body').append($overlayElm);
-
 
         $overlay.on('click', function () {
             // add z-index to
@@ -122,6 +150,7 @@ const Anime = {
         $overlayElm.on('click', function () {
             $overlayElm.fadeToggle();
         });
+
 
         if (watchConfig.autoPlay) {
             $(".play").click();
@@ -134,9 +163,26 @@ const Anime = {
             autoNext: function () {
                 turnOrOff(watchConfig.autoNext, $autoNext);
             },
+            autoSkip: function () {
+                turnOrOff(watchConfig.autoSkip, $autoSkip);
+            },
+            bookmark: function () {
+                // bookmark
+                let $bookmark = $controls.find('.bookmark [data-toggle="dropdown"]');
+
+                $bookmark.html($bookmark.data('add'));
+
+                $bookmark.on('click', function (e) {
+                    e.preventDefault();
+                });
+            },
+
             init: function () {
-                this.autoPlay();
-                this.autoNext();
+                for (let key in this) {
+                    if (key !== 'init') {
+                        this[key]();
+                    }
+                }
             }
         }
 
@@ -150,16 +196,12 @@ const Anime = {
             updateWatchConfig('autoNext', $autoNext);
         });
 
+        $autoSkip.on('click', function () {
+            updateWatchConfig('autoSkip', $autoSkip);
+        });
+
         // get episodes CHECK IF ANIME NOT NULL
         if (typeof (anime) !== 'undefined' && anime !== null) {
-            // getEpisodes(anime.id, function (res) {
-            //     if (res.status == 'success') {
-            //         $("#episodes").html(res.data);
-
-
-            //     }
-            // });
-
             if ($('[data-dub="1"]').length < 1 || $('[data-sub="1"]').length < 1) {
                 $(".filter.type").hide();
             }
@@ -168,10 +210,20 @@ const Anime = {
             currentEp.click();
             currentEp.addClass('active');
 
+            episode = episode ? episode : currentEp.data('episode');
+
             let currentRange = $(currentEp).parents('.ep-range').data('range');
 
             displayRange(currentRange);
         }
+
+        // filter input
+        $(document).on('keyup', '.filter input', function () {
+            let filter = $(this).val().toLowerCase();
+            $('.ep-link').removeClass('highlight');
+
+            $("[data-episode-num='" + filter + "']").find('.ep-link').addClass('highlight');
+        });
 
 
         // add event change range

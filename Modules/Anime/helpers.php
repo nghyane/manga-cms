@@ -45,3 +45,24 @@ if (!function_exists('get_cover')) {
         return asset("storage/covers/$slug.jpg");
     }
 }
+
+if (!function_exists('stringCipher')) {
+    function stringCipher($string, $shift)
+    {
+        $encoded_string = "";
+        for ($i = 0; $i < strlen($string); $i++) {
+            $char = $string[$i];
+            if (ctype_alpha($char)) {
+                $shift_char = chr((ord(strtolower($char)) - 97 + $shift) % 26 + 97);
+                if (ctype_upper($char)) {
+                    $encoded_string .= strtoupper($shift_char);
+                } else {
+                    $encoded_string .= $shift_char;
+                }
+            } else {
+                $encoded_string .= $char;
+            }
+        }
+        return base64_encode($encoded_string);
+    }
+}

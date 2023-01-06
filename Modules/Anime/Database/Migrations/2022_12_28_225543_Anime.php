@@ -42,6 +42,7 @@ return new class extends Migration
             $table->tinyInteger('subbed')->default(0); // has subbed version
             $table->tinyInteger('dubbed')->default(0); // has dubbed version
             $table->string('slug');
+            $table->string('thumbnail')->nullable()->default(null); // episode thumbnail (optional)
 
             $table->timestamps();
         }); // to create episode model run: php artisan make:model Episode -m
@@ -50,10 +51,15 @@ return new class extends Migration
         Schema::create('video', function (Blueprint $table) {
             $table->id();
             $table->foreignId('episode_id')->constrained('episodes');
-            $table->string('type'); // video type: mp4, embed, etc
+            $table->string('type')->default('embed');
             $table->string('url');
-            $table->string('subtitle'); // subtitle language - json format [{language: 'English', url: 'https://example.com/subtitle.srt'}}]
-            $table->string('language');
+            $table->string('subtitle')->nullable()->default(null);
+            // subtitle language - json format [{language: 'English', url: 'https://example.com/subtitle.srt'}}]
+            $table->string('language')->nullable()->default(null);
+            $table->string('server')->nullable()->default(null);
+
+            $table->tinyInteger('dubbed')->default(0);
+            $table->tinyInteger('subbed')->default(0);
 
             $table->timestamps();
         });

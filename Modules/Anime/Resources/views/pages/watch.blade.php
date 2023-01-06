@@ -37,8 +37,7 @@
                     <div class="content">
                         <div class="player-wrapper">
                             <div id="player">
-                                <div class="backdrop"
-                                    style="background-image: url('https://static.bunnycdn.ru/i/cache/images/2018/04/697bc4bd1962c1ccf8ce1762b7f3ab4b.jpg')">
+                                <div class="backdrop" style="background-image: url('{{ $episode->thumbnail }}')">
                                 </div>
                                 <div class="play"></div>
                             </div>
@@ -80,7 +79,9 @@
 
                 @include('anime::partials.shortcuts')
 
-                <div id="servers"></div>
+                <div id="servers">
+                    
+                </div>
                 <section id="episodes">
                     @include('anime::partials.episodes')
                 </section>
@@ -91,7 +92,8 @@
                         </div>
                     </div>
                     <div class="info">
-                        <h2 class="title d-title" data-jp="Dareka no Manazashi">{{ $anime->name }}</h2>
+                        <h2 class="title d-title" data-jp="{{ $metas->get('alternative', $anime->name) }}">
+                            {{ $anime->name }}</h2>
                         <div class="alias">
                             @if ($metas->get('alternative'))
                                 {{ $metas->get('alternative') }};
@@ -106,11 +108,17 @@
                         <div class="meta">
                             <div class="col1">
                                 <div>
-                                    {{ __('type') }}: <span>{{ $anime->type }}</span>
+                                    {{ __('type') }}: <span>{{ $anime->type() }}</span>
                                 </div>
                                 <div>
-                                    {{ __('studio') }}: <span><a href="/studio/comix-wave-films">CoMix Wave
-                                            Films</a></span>
+                                    {{ __('studio') }}: <span>
+                                        @foreach ($studios as $studio)
+                                            <a href="/studio/{{ $studio->slug }}">{{ $studio->name }}</a>
+                                            @if (!$loop->last)
+                                                ,
+                                            @endif
+                                        @endforeach
+                                    </span>
                                 </div>
                                 <div>
                                     {{ __('date_aired') }}: <span>{{ $metas->get('date_aired', __('unknown')) }}</span>

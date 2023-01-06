@@ -10,7 +10,7 @@ use Plank\Metable\Metable;
 
 class Anime extends Model
 {
-    use HasFactory, Metable;
+    use HasFactory, Metable, Cachable;
 
 
     const STATUS_ONGOING = 1;
@@ -49,7 +49,7 @@ class Anime extends Model
 
     public function studio()
     {
-        return $this->belongsTo(Studio::class);
+        return $this->belongsToMany(Studio::class, 'anime_studios', 'anime_id', 'studio_id');
     }
 
     public function status()

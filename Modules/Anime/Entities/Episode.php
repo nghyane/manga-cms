@@ -34,7 +34,7 @@ class Episode extends Model
 
     public function video()
     {
-        return $this->hasOne(Video::class);
+        return $this->hasMany(Video::class); // many servers
     }
 
     public function queue()

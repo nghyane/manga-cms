@@ -50,12 +50,15 @@
                 @php
                     $epJson = json_encode([
                         'id' => $episode->id,
+                        'slug' => $episode->slug,
+                        'url' => $episode->url($anime),
                         'name' => $episode->name,
                     ]);
                 @endphp
 
                 <li data-sub="{{ $episode->subbed }}" data-dub="{{ $episode->dubbed }}"
-                    data-episode-id="{{ $episode->id }}" data-episode='{{ $epJson }}'>
+                    data-episode-num="{{ $episode->name }}" data-episode-id="{{ $episode->id }}"
+                    data-episode='{{ $epJson }}'>
                     <a href="{{ $episode->url($anime) }}" class="ep-link">
                         {{ $episode->name }}
                     </a>

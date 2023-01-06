@@ -34,11 +34,12 @@ export default defineConfig({
                 __dirname + '/Resources/views/**',
                 __dirname + '/Resources/assets/js/**',
             ],
-            // .tooltip, .tooltip-inner, .tooltip-arrow
+            content: ['index.html', 'Resources/views/**/*.{vue,html,php,js,ts,jsx,tsx}'],
+            // .tooltip, .tooltip-inner, .tooltip-arrow, .highlight
             safelist: {
-                standard: [/tooltip/, /popover/, /modal/, /fade/, /show/, /bs-tooltip/, /bs-popover/, /bs-modal/, /bs-fade/, /bs-show/],
-                deep: [/tooltip/, /popover/, /modal/, /fade/, /show/, /bs-tooltip/, /bs-popover/, /bs-modal/, /bs-fade/, /bs-show/],
-            }
+                standard: ['tooltip$', 'highlight'],
+            },
+
         })
     ],
 });
