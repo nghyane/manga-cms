@@ -13505,7 +13505,8 @@ ul.letters li a.active {
 }
 
 .watchpage .controls {
-    border-bottom: 1px solid #242424
+    border-bottom: 1px solid #242424;
+    margin-top: 5px;
 }
 
 .watchpage .controls:after {

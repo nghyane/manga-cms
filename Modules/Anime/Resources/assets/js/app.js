@@ -106,7 +106,50 @@ const Anime = {
     },
 
     initAnime: function () {
+        let Section = {
+            element: $('#recent-update'),
+            name: $('.links .tab.active').data('name'),
+            page: $('.links .tab.active').data('page') || 1,
+        }
 
+
+        const getAnime = function (name, page = 1) {
+            $.ajax({
+                url: `/api/home/${name}?page=${page}`,
+                success: function (data) {
+                    $(".itemlist").html(data.data);
+                }
+            });
+        }
+
+        $(Section.element).on('click', '.links .tab', function () {
+            Section.name = $(this).data('name');
+            Section.page = $(this).data('page') || 1;
+
+            $('.links .tab').removeClass('active');
+
+            $(this).addClass('active');
+
+            getAnime(Section.name, Section.page);
+
+            if (Section.page <= 1) {
+                $('.paging .prev').addClass('disabled');
+            }
+        });
+
+        $(Section.element).on('click', '.paging .next', function () {
+            $('.paging .prev').removeClass('disabled');
+
+            getAnime(Section.name, ++Section.page);
+        });
+
+        $(Section.element).on('click', '.paging .prev', function () {
+            getAnime(Section.name, --Section.page);
+
+            if (Section.page <= 1) {
+                $('.paging .prev').addClass('disabled');
+            }
+        });
 
     },
 
@@ -314,6 +357,21 @@ const Anime = {
 
         //clear Player
         playerEle.innerHTML = '';
+
+        // if type embed
+        if (type === 'embed') {
+            let $iframe = $('<iframe src="' + url + '" frameborder="0" allowfullscreen></iframe>');
+            $iframe.css({
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+            });
+
+            $(playerEle).html($iframe);
+            return;
+        }
 
         const config = {
             "file": url,

@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/anime', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/anime', function (Request $request) {
+//     return $request->user();
+// });
 
+// group api
+Route::get('/home/{type}', 'ApiController@home')->where('type', 'updated-all|updated-sub|updated-dub|trending|random');
 Route::get('/anime/{anime_id}/episodes', 'ApiController@episodes');

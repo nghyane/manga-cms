@@ -30,4 +30,48 @@ class ApiController extends Controller
             'data' => $episodes
         ]);
     }
+
+    public function home($type)
+    {
+        $page = request()->get('page', 1);
+        $limit = config('anime.home_page_num', 20);
+
+        $offset = ($page - 1) * $limit;
+
+        $anime_module = \Modules\Anime\Entities\Anime::with('meta')->offset($offset)->limit($limit);
+
+        switch ($type) {
+            case 'updated':
+            case 'updated-all':
+                $animes = $anime_module->orderBy('updated_at', 'desc');
+                break;
+            case 'updated-sub':
+                $animes = $anime_module->whereMeta('subbed', 1)->orderBy('updated_at', 'desc');
+                break;
+            case 'updated-dub':
+                $animes = $anime_module->whereMeta('dubbed', 1)->orderBy('updated_at', 'desc');
+                break;
+            case 'popular':
+            case 'trending':
+                $animes = $anime_module->orderBy('views', 'desc');
+                break;
+            case 'newest':
+                $animes = $anime_module->orderBy('created_at', 'desc');
+                break;
+            default:
+                // random
+                $animes = $anime_module->inRandomOrder();
+                break;
+        }
+
+        $animes = $anime_module->get();
+
+        // composent itemlist
+        $animes = view('anime::components.itemlist', compact('animes'))->render();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $animes
+        ]);
+    }
 }

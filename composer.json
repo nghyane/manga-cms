@@ -20,6 +20,7 @@
         "laravel/ui": "^3.0",
         "nwidart/laravel-modules": "^9.0",
         "plank/laravel-metable": "^5.3",
+        "predis/predis": "^2.0",
         "spatie/laravel-permission": "^5.7",
         "symfony/css-selector": "^6.0",
         "symfony/dom-crawler": "^6.0",

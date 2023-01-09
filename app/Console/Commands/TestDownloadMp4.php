@@ -27,28 +27,30 @@ class TestDownloadMp4 extends Command
      */
     public function handle()
     {
-        
+
         $ep = 6;
 
-        $episode_path = storage_path('app/public/episodes/' . $ep);
-        $download_tmp_path = storage_path('app/public/episodes/' . $ep . '/download_tmp');
+        $episode_path = storage_path('app/public/test/' . $ep);
+        $download_tmp_path = storage_path('app/public/test/' . $ep . '/download_tmp');
 
         if (!file_exists($download_tmp_path)) {
-            mkdir ($download_tmp_path, 0777, true);
+            mkdir($download_tmp_path, 0777, true);
         }
 
         // fast mp4 download gluzzle
-        $mp4_url = 'https://xupload.org/files/W124H413/K/kemonokko-tsuushin-the-animation-ushi-musume-bell/kemonokko-tsuushin-the-animation-ushi-musume-bell-1.mp4';
+        $mp4_url = 'https://web.lotuscdn.vn/2023/1/8/3d806ea25bb5e1431d0e0fc385f18ad4_1673194398180-g3qpov8q67_720p.mp4';
 
         $mp4_file = $download_tmp_path . '/video.mp4';
 
-        $client = new \GuzzleHttp\Client();
-        $client->request('GET', $mp4_url, [
-            'sink' => $mp4_file,
-            'progress' => function ($downloadTotal, $downloadedBytes) {
-                echo "Downloaded: " . round($downloadedBytes / 1024 / 1024, 2) . "MB / " . round($downloadTotal / 1024 / 1024, 2) . "MB" . PHP_EOL;
-            }
-        ]);
+        if (!file_exists($mp4_file)) {
+            $client = new \GuzzleHttp\Client();
+            $client->request('GET', $mp4_url, [
+                'sink' => $mp4_file,
+                'progress' => function ($downloadTotal, $downloadedBytes) {
+                    echo "Downloaded: " . round($downloadedBytes / 1024 / 1024, 2) . "MB / " . round($downloadTotal / 1024 / 1024, 2) . "MB" . PHP_EOL;
+                }
+            ]);
+        }
 
 
         $command = "ffmpeg -i $mp4_file -c copy -g 3 -keyint_min 3 -hls_list_size 0 -hls_time 10 -hls_segment_filename $episode_path/%03d.ts $episode_path/master.m3u8";
@@ -64,9 +66,11 @@ class TestDownloadMp4 extends Command
             }
         );
 
+
         // parse m3u8 file get segments url or path
         $m3u8_content = file_get_contents($episode_path . '/master.m3u8');
         preg_match_all('/EXTINF:.+?,\s*(.+?)\s*$/m', $m3u8_content, $matches);
+
 
         $segments = $matches[1];
 
@@ -75,7 +79,7 @@ class TestDownloadMp4 extends Command
             $files[] = $episode_path . '/' . $segment;
         }
 
-        $storage = new \Modules\Storage\Services\NftStorage();
+        $storage = new \Modules\Storage\Services\Tistory();
         $uploaded = $storage->multiUploadFile($files);
 
         // update segments

@@ -1,30 +1,10 @@
 <?php
 
+$urls = [
+    'https://media.discordapp.net/attachments/922167218974916668/925236927093944320/b6a3bef7-224c-46b5-a369-542544b21340.png'
+];
 
-$url = "https://plus.google.com/_/upload/photos/resumable?upload_id=ADPycdtIFGY0b-jwa6k1lJi77-zBlQePDUNwHBNeWxiSOSN0oIkgl78p1_YObmrFwXZuLAoagq16HGsg0K_VNLmDUFIV7g&file_id=000";
-
-$curl = curl_init($url);
-curl_setopt($curl, CURLOPT_URL, $url);
-curl_setopt($curl, CURLOPT_PUT, true);
-curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-$headers = array(
-    "Content-Type: application/json",
-    "Content-Length: 0",
-);
-curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-//for debug only!
-curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-$resp = curl_exec($curl);
-curl_close($curl);
-var_dump($resp);
-
-die;
-$url = "https://clients6.google.com/batch/drive/v2internal?%24ct=multipart%2Fmixed%3B%20boundary%3D%22%3D%3D%3D%3D%3D4t9r8ktj5utg%3D%3D%3D%3D%3D%22&key=AIzaSyAw-cTyp9Xotzvu3vNDWhDU3E9NConkKxQ";
-
-$fields = "thumbnailLink,imageMediaMetadata";
+$url = "https://mail.yandex.ru/web-api/models/liza1?_m=do-sanitize";
 
 $curl = curl_init($url);
 curl_setopt($curl, CURLOPT_URL, $url);
@@ -32,25 +12,44 @@ curl_setopt($curl, CURLOPT_POST, true);
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
 $headers = array(
-   "Content-Type: text/plain",
-   "cookie: ANID=AHWqTUnpl6cJdsn_vw7b6rordjkD1rV1XXys6BVtuI9bLElYpcyVtOaJMoliCm4a; HSID=AJ5tLDBF4ga_2pL2x; SSID=AE_yijw7HAb1XGh6U; APISID=bt-rks33ozeZKuaY/ADYOUo3hqL0EwzcfI; SAPISID=ZEs-WUis8DI2XaU7/AegeprkbO6yl9XTj_; __Secure-1PAPISID=ZEs-WUis8DI2XaU7/AegeprkbO6yl9XTj_; __Secure-3PAPISID=ZEs-WUis8DI2XaU7/AegeprkbO6yl9XTj_; SID=RwgVXKi10E1s-6Q-95ZJ0fXM29xE0cmLsWY_MxoLztgVZOqMAam3uBZ_E3tpJUdWGyI34g.; __Secure-1PSID=RwgVXKi10E1s-6Q-95ZJ0fXM29xE0cmLsWY_MxoLztgVZOqMCZht_brNvDWKDMzrHFhhJw.; __Secure-3PSID=RwgVXKi10E1s-6Q-95ZJ0fXM29xE0cmLsWY_MxoLztgVZOqMgLQ3cmBrbcBpMx27TAyzqQ.; SEARCH_SAMESITE=CgQImpcB; __Secure-ENID=9.SE=bfxjf7SjMtnEXUqXJcqUYPNWiAIt9z15aXFPkzvR-CtE3VMhfoPSKeY_a42VtA8_HJIe6-Arht6Zz7RaEsfUksb6yCq_CwMMFGzxCLL5f3OngbdAan0vCDAAy7e_YxqwAHZ_eNCg386xL7yUlxtN49miyvLT22aFN7azkzGMvms7RvLgWL-UipkWw5EgvdbGlWZ7HkYVh0Ns9nyS50Ywla4GaYcBcpTEZwC09c-u3HaFRQsVI46E; AEC=AakniGPDqB17kBXl2f8HSalUG6lo7lRFmdZhYsxZJ3IPGRx3fRlpw0jE960; 1P_JAR=2022-12-29-17; NID=511=t44dDshsxjTNudkXtlcd94O4NESh5bGUOad-dhlWcYKu3JqRa1G4uQlgk48YP-WizejuIh03yhBgmx51UTf6l87VuLvfH2KoZbYeR-zJyeOg0tj09uIWMkvjZlVmB3-e-DHemgi0uTnt84YU5S7Gq5vb5TBUd3Cdoq6CaF89mQb5HC_lFh7Q4pRYefIQ9bx92b-9Dh8zbQF5-rypZ5nG84FzcQsCKBlcZrzQpkXrZG9y96HnZ9vze1mjF88uDqBUAH3ck5Y_ihY3XIHFn9WXr8y1oI-Wcf977w7NKSDTPpmdhAyUCVFoRMcXmO79XYtd-nbuL9Svu4G3UPzpKTFCjfeUeE9oYxJ6_F6oLx8ZHU4BB9LSpLv18MrDiWpojrdid9scaa-xGw5yNTnOGnoZFY3-JK7bh4jklWIQPIw7BSw7OIM7AoVttymQzLA8FBeXPPzykMfqJIg8wldC3svsLJEBVLCbiA5wcMuurjzRvPPe5BMF2V0W; SIDCC=AIKkIs1RCQrG57yD1j_3KqEKtiVcUwKc1fJLb6clKheQhOmwp4lSlbehVUsrJmACGTcdI1hBjWQ; __Secure-1PSIDCC=AIKkIs2YTMCtaWoWisq3jYVQ8hnOCLFNyZXJq1ql5ZMwfYLHKP0EJ1f8pWUnBuUM2IvZ7KtCWDLF; __Secure-3PSIDCC=AIKkIs3FcdRKypzftAsMYofPb6et8vjvIP3Mdnyro_rMYGU4pA7IPzROfiTHxYOrjbTQJs54HHK7",
-   "origin: https://docs.google.com",
-   "referer: https://docs.google.com/",
+    "Cookie: yuidss=7988020541636788093; yandexuid=7988020541636788093; _ym_uid=1664167154348419930; _ym_d=1664167155; is_gdpr=0; is_gdpr_b=CIyaHxCxlAEoAg==; my=YycCAAMA; L=QzBHclpxZANWWl5sXWJ+dH9cbmAIYGdsGD8lLQYEMFgVXBAFKxs6FQ==.1667977057.15156.338425.c31d59089b6bbe6142b1ea62f903de78; yandex_login=hoangvananhnghia; skid=2455671331668005686; gdpr=0; ymex=1703803048.yrts.1672267048; yp=1670865349.csc.1#1683954940.szm.3:1280x800:1280x649; i=2UmKyCpF0vdtjOZVwkcBuSIIee0TAFdWDAmYlKV2cvoWI/W2f28IYqetY//fBFgI1j8fxpautn7CC34eUnMezX9pkWI=; bltsr=1; KIykI=1; font_loaded=YSv1; _yasc=DiZosfQMGutAJWzVcVjd8QiFNkqxEzfyVPSjZbVxb3H6a4uNSEfdTCgeLpGi7cFg; Session_id=3:1673291141.5.0.1667976456178:vvProWF54fWb9CoDgJ0CJA:3e.1.2:1|1711147561.601.2.0:3.1:327036949.2:601|3:10263855.571921.vWIPJf0Mw0tyQbbuBmq5ncdRWPo; sessionid2=3:1673291141.5.0.1667976456178:vvProWF54fWb9CoDgJ0CJA:3e.1.2:1|1711147561.601.2.0:3.1:327036949.2:601|3:10263855.571921.fakesign0000000000000000000; sessguard=1.1673291141.1667976456178:vvProWF54fWb9CoDgJ0CJA:3e..3.500:31634.GVLGDc9O.09tdpZW4HqzH5sgGMEOQ29-_5LY; mda2_beacon=1673291141507; lah=2:1736363141.10019756.xyTTuYaoB0j4qqOE.LhL3tsQi-WQiKoARGm-GWCE-AX-mJFniqGBW.cubaklT8v9OmZsHsNjhB1A",
+    "Content-Type: application/json",
 );
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-$data = <<<DATA
---=====4t9r8ktj5utg=====
-content-type: application/http
-content-transfer-encoding: binary
 
-GET /drive/v2internal/files/1VstHPlUZBDFqH35sCEj33UanMizfxjjL HTTP/1.1
-authorization: SAPISIDHASH 1672334376_972dbd7d6b0c3a4ec7630b0935a44f6056a710d4_u
-x-goog-authuser: 0
+$content = "";
 
+foreach ($urls as $url) {
+    $content .= '<img style=\"max-width: 100%\" src=\"' . $url . '\">';
+}
 
---=====4t9r8ktj5utg=====--
-DATA;
+// ckey,  _connection_id
+$data = '{
+   "models":[
+      {
+         "name":"do-sanitize",
+         "params":{
+            "content":"'. $content .'"
+         },
+         "meta":{
+            "requestAttempt":1
+         }
+      }
+   ],
+   "_ckey":"PDSNy8MM9ME9Liv31SgCGh+gdfk=!lcqncwy0",
+   "_uid":"",
+   "_locale":"en",
+   "_timestamp":"1673291141877",
+   "_product":"RUS",
+   "_connection_id":"LIZA-79406497-1673291141877",
+   "_exp":"",
+   "_eexp":"",
+   "_service":"LIZA",
+   "_version":"95.1.0",
+   "_messages_per_page":"1000"
+}
+';
 
 curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
 
@@ -60,7 +59,13 @@ curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
 $resp = curl_exec($curl);
 curl_close($curl);
-var_dump($resp);
 
-?>
+$resp = json_decode($resp);
 
+$html = $resp->models[0]->data->result;
+
+// get urls img
+preg_match_all("/src=\"(.*?)\"/", $html, $matches);
+$urls = $matches[1];
+
+print_r($urls);

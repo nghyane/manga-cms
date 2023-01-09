@@ -28,3 +28,6 @@ Route::put('/profile', 'ProfileController@update')->name('profile.update');
 Route::get('/about', function () {
     return view('about');
 })->name('about');
+
+Route::get("/yd/master/{any}", '\Modules\Storage\Http\Controllers\YandexProxyController@index')->where('any', '.*');
+Route::get("/yd/chunk/{id}.m3u8", '\Modules\Storage\Http\Controllers\YandexProxyController@chunk')->name("yd.chunk");

@@ -11,25 +11,28 @@
         </div>
 
         <div class="paging">
-            <span class="prev tip disabled" data-original-title="Page 1">
+            <span class="prev tip disabled" data-original-title="{{ __('Prev Page') }}">
                 <i class="fa fa-angle-left"></i>
             </span>
-            <span class="next tip" data-original-title="Page 2">
+            <span class="next tip" data-original-title="{{ __('Next Page') }}">
                 <i class="fa fa-angle-right"></i>
             </span>
         </div>
     </div>
 
     @php
-        $limit = 40;
+        $limit = config('anime.home_page_num', 20);
         $offset = request()->cookie('home_page_num', 0) * $limit;
 
-        $anime_update = \Modules\Anime\Entities\Anime::orderBy('updated_at', 'desc')
+        $animes = \Modules\Anime\Entities\Anime::orderBy('updated_at', 'desc')
             ->with('meta')
             ->offset($offset)
             ->limit($limit)
             ->get();
     @endphp
 
-    <x-anime::itemlist :animes="$anime_update" />
+    <ul class="itemlist">
+        <x-anime::itemlist :animes="$animes" />
+    </ul>
+
 </section>

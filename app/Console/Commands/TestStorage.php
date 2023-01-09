@@ -27,16 +27,18 @@ class TestStorage extends Command
      */
     public function handle()
     {
-        $episode_path = storage_path('app/public/episodes/4');
+        $episode_path = storage_path('app/public/streaming/63b83f127fdcf');
+        echo $episode_path . PHP_EOL;
 
-        $files = glob($episode_path . '/ts/*.ts');
+        $files = glob($episode_path . '/*.ts');
         $master_file = $episode_path . '/master.m3u8';
 
         echo "Files: " . count($files) . PHP_EOL;
 
-        $storage = new \Modules\Storage\Services\NftStorage();
+        $storage = new \Modules\Storage\Services\Tistory();
         $uploaded = $storage->multiUploadFile($files);
 
+        die;
         $index_uploaded = 0;
         $m3u8_content = explode(PHP_EOL, file_get_contents($master_file));
 

@@ -31,7 +31,9 @@
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     "forwardPorts": [
         80,
-        5432
+        5432,
+        3306,
+        6379
     ],
     // run install script after container is created
     "postCreateCommand": "",

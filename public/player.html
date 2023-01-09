@@ -5,11 +5,45 @@
     <title>Advance P2P VanLong Streaming</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- iOS web P2P Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/p2p-media-loader-core@latest/build/p2p-media-loader-core.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/p2p-media-loader-hlsjs@latest/build/p2p-media-loader-hlsjs.min.js"></script>
+    <!-- strict-origin -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hola.org/jwplayer-hlsjs@latest/dist/jwplayer.hlsjs.min.js"></script>
+
+    <script src="https://ssl.p.jwpcdn.com/player/v/8.26.5/jwplayer.js"></script>
+
+    <script>
+
+        const proxyList = [
+            'https://proxy.wibulord.com/hls/?url=',
+            'https://cdn-k01.kazuma.workers.dev/?url=',
+            'https://cdn.wojaf15301.workers.dev/?url=',
+            'https://cdn.kazuma-k01.workers.dev/?url=',
+            'https://cdn.kazuma-k02.workers.dev/?url=',
+            'https://kazuma-cdn.wibulord.com/?url=',
+        ];
+
+        let index = 0;
+        // override default onload event XMLHttpRequest
+        var _open = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function (method, url, async, user, pass) {
+            if (url.includes('kakao') && !url.includes('resize')) {
+                let _proxy = proxyList[index++ % proxyList.length];
+                if (_proxy.includes('googleusercontent') || _proxy.includes('duckduckgo')) {
+                    url = encodeURIComponent(url);
+                }
+
+                url = _proxy + url;
+            }
 
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://ssl.p.jwpcdn.com/player/v/8.1.3/jwplayer.js"></script>
+            _open.call(this, method, url, async, user, pass);
+        };
 
+    </script>
 
 </head>
 
@@ -17,22 +51,57 @@
     <div id="main-view">
         <div>
             <div id="video" class="text-center"></div>
-
         </div>
     </div>
     <script>
-        window.trackers = ["wss://tracker.btorrent.xyz/", "wss://tracker.openwebtorrent.com/"];
         jwplayer.key = "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99";
+        const uid = window.location.href.split('/').pop();
+        const starttime = Number(localStorage.getItem('jwplayer.starttime.' + uid)) || 0;
 
-        jwplayer("video").setup({
-            "file": urlVideo,
-            "image": urlImage,
-            "width": "100%",
-            "height": "100%",
+        let player = jwplayer("video").setup({
+            file: [
+                "/yd/master/app/public/test/6/playlist.m3u8",
+            ],
+            width: "100%",
+            height: "100%",
+            preload: "auto",
+            primary: 'html5',
+            stretching: "exactfit",
+            aspectratio: "16:9",
+            hlsjsConfig: {
+                debug: true,
+                p2pConfig: {
+                    logLevel: 'info',
+                    live: true,
+                    announce: [
+                        'wss://tracker.openwebtorrent.com',
+                        'wss://tracker.btorrent.xyz',
+                        'wss://tracker.fastcast.nz',
+                    ],
+                },
+            },
         });
 
-        // var provider = require("@hola.org/jwplayer-hlsjs");
-        // provider.attach();
+        player.on('time', function ({ position }) {
+            // save current time to local storage
+
+            localStorage.setItem('jwplayer.starttime.' + uid, position);
+        });
+
+        player.on('firstFrame', function () {
+            // seek to saved time
+            player.seek(starttime);
+        });
+
+        if (Hls.isSupported() && p2pml.hlsjs.Engine.isSupported()) {
+            var engine = new p2pml.hlsjs.Engine();
+
+            p2pml.hlsjs.initJwPlayer(player, {
+                liveSyncDurationCount: 8, // To have at least 7 segments in queue
+                loader: engine.createLoaderClass(),
+            });
+
+        }
 
     </script>
 </body>
