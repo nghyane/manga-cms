@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Storage\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -15,9 +16,8 @@ class YandexProxyController extends Controller
     {
         $key_master = md5($path);
 
-        if (Cache::has($key_master))
-        {
-            return response(Cache::get($key_master) , 200, ['Content-Type' => 'application/vnd.apple.mpegurl', ]);
+        if (Cache::has($key_master)) {
+            return response(Cache::get($key_master), 200, ['Content-Type' => 'application/vnd.apple.mpegurl',]);
         }
 
         $file_path = storage_path($path);
@@ -28,7 +28,8 @@ class YandexProxyController extends Controller
 
         $urls = $matches[2];
 
-        $new_urls = $this->getProxy($urls);
+        $yandex = new \Modules\Storage\Services\Yandex();
+        $new_urls = $yandex->getProxys($urls);
 
         $content = str_replace($urls, $new_urls, $content);
 
@@ -55,8 +56,7 @@ class YandexProxyController extends Controller
 
         $content = "";
 
-        foreach ($urls as $url)
-        {
+        foreach ($urls as $url) {
             $content .= '<img style=\"max-width: 100%\" src=\"' . $url . '\">';
         }
 
@@ -86,4 +86,3 @@ class YandexProxyController extends Controller
         return $urls;
     }
 }
-

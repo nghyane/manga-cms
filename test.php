@@ -30,7 +30,7 @@ $data = '{
       {
          "name":"do-sanitize",
          "params":{
-            "content":"'. $content .'"
+            "content":"' . $content . '"
          },
          "meta":{
             "requestAttempt":1

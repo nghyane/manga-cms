@@ -2,7 +2,7 @@
 
 namespace Modules\Storage\Services;
 
-class Yarndex
+class Yandex
 {
     public $client;
 
@@ -11,8 +11,10 @@ class Yarndex
         $this->client = new \GuzzleHttp\Client([
             "verify" => false,
             "headers" => [
-                "content-type" => "application/json",
-                "cookie" => "",
+                "cookie" => "yuidss=7988020541636788093; yandexuid=7988020541636788093; _ym_uid=1664167154348419930; _ym_d=1664167155; is_gdpr=0; is_gdpr_b=CIyaHxCxlAEoAg==; my=YycCAAMA; L=QzBHclpxZANWWl5sXWJ+dH9cbmAIYGdsGD8lLQYEMFgVXBAFKxs6FQ==.1667977057.15156.338425.c31d59089b6bbe6142b1ea62f903de78; yandex_login=hoangvananhnghia; skid=2455671331668005686; gdpr=0; ymex=1703803048.yrts.1672267048; yp=1670865349.csc.1#1683954940.szm.3:1280x800:1280x649; i=2UmKyCpF0vdtjOZVwkcBuSIIee0TAFdWDAmYlKV2cvoWI/W2f28IYqetY//fBFgI1j8fxpautn7CC34eUnMezX9pkWI=; bltsr=1; KIykI=1; font_loaded=YSv1; _yasc=DiZosfQMGutAJWzVcVjd8QiFNkqxEzfyVPSjZbVxb3H6a4uNSEfdTCgeLpGi7cFg; Session_id=3:1673291141.5.0.1667976456178:vvProWF54fWb9CoDgJ0CJA:3e.1.2:1|1711147561.601.2.0:3.1:327036949.2:601|3:10263855.571921.vWIPJf0Mw0tyQbbuBmq5ncdRWPo; sessionid2=3:1673291141.5.0.1667976456178:vvProWF54fWb9CoDgJ0CJA:3e.1.2:1|1711147561.601.2.0:3.1:327036949.2:601|3:10263855.571921.fakesign0000000000000000000; sessguard=1.1673291141.1667976456178:vvProWF54fWb9CoDgJ0CJA:3e..3.500:31634.GVLGDc9O.09tdpZW4HqzH5sgGMEOQ29-_5LY; mda2_beacon=1673291141507; lah=2:1736363141.10019756.xyTTuYaoB0j4qqOE.LhL3tsQi-WQiKoARGm-GWCE-AX-mJFniqGBW.cubaklT8v9OmZsHsNjhB1A",
+                'referer' => 'https://mail.yandex.ru/',
+                'origin' => 'https://mail.yandex.ru',
+                'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
             ],
         ]);
     }
@@ -29,11 +31,15 @@ class Yarndex
         $content = $response->getBody()->getContents();
         $content = json_decode($content, true);
 
-        $images = $content["models"][0]["result"]["content"];
+        $images = $content["models"][0]["data"]["result"];
+
+        // remove amp
+        $images = preg_replace('/&amp;/', '&', $images);
 
         // get all img src
-        preg_match_all('/<img src="(.*?)"/', $images, $matches);
-        
+        preg_match_all('/src="(.*?)"/', $images, $matches);
+
+        return $matches[1] ?? $urls;
     }
 
     private function buildPost($urls)
@@ -43,22 +49,10 @@ class Yarndex
             return '<img src="' . $url . '">';
         }, $urls));
 
-
         // get "ckey":"
-        $response = $this->client->get("https://mail.yandex.ru");
-        $content = $response->getBody()->getContents();
+        $ckey = "NC5MIpnqFVSHUeTSOsjucNmJLrc=!lcqpfxyq";
 
-        preg_match('/"ckey":"(.*?)"/', $content, $matches);
-        $ckey = $matches[1];
-
-        // get "_uid":"
-        preg_match('/"_uid":"(.*?)"/', $content, $matches);
-        $uid = $matches[1];
-
-
-        // "Config":{"connection_id":"
-        preg_match('/"Config":{"connection_id":"(.*?)"/', $content, $matches);
-        $connection_id = $matches[1];
+        $connection_id = "LIZA-09301638-1673297288817";
 
 
         $data = [
@@ -74,7 +68,7 @@ class Yarndex
                 ],
             ],
             "_ckey" => $ckey,
-            "_uid" => $uid,
+            "_uid" => '',
             "_locale" => "en",
             "_timestamp" => time(),
             "_product" => "RUS",
@@ -85,5 +79,7 @@ class Yarndex
             "_version" => "95.1.0",
             "_messages_per_page" => "1000",
         ];
+
+        return $data;
     }
 }
